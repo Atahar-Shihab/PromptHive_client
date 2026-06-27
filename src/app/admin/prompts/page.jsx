@@ -5,7 +5,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
-import { Check, Copy, Eye, FileText, Lock, ShieldCheck, Sparkles, Star, Trash2, UserRound, X } from "lucide-react";
+import { Check, CheckCircle2, Clock3, Copy, Eye, FileText, Layers3, Lock, ShieldCheck, Sparkles, Star, Trash2, UserRound, X, XCircle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Spinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/dashboard/NeuralWidgets";
@@ -95,10 +95,10 @@ export default function AdminPromptsPage() {
   );
   const visiblePrompts = statusFilter === "all" ? prompts : prompts.filter((item) => item.status === statusFilter);
   const tabs = [
-    ["pending", "Pending Review", counts.pending],
-    ["approved", "Approved", counts.approved],
-    ["rejected", "Rejected", counts.rejected],
-    ["all", "All Prompts", counts.all]
+    { value: "pending", label: "Pending Review", hint: "Needs decision", count: counts.pending, icon: Clock3 },
+    { value: "approved", label: "Approved", hint: "Live marketplace", count: counts.approved, icon: CheckCircle2 },
+    { value: "rejected", label: "Rejected", hint: "Returned with feedback", count: counts.rejected, icon: XCircle },
+    { value: "all", label: "All Prompts", hint: "Full archive", count: counts.all, icon: Layers3 }
   ];
 
   return (
@@ -116,9 +116,13 @@ export default function AdminPromptsPage() {
         </div>
       </div>
       <div className="admin-review-tabs" aria-label="Prompt status filter">
-        {tabs.map(([value, label, count]) => (
-          <button className={statusFilter === value ? "active" : ""} key={value} type="button" onClick={() => setStatusFilter(value)}>
-            <span>{label}</span>
+        {tabs.map(({ value, label, hint, count, icon: Icon }) => (
+          <button className={statusFilter === value ? `active ${value}` : value} key={value} type="button" onClick={() => setStatusFilter(value)}>
+            <span className="admin-tab-icon"><Icon size={17} /></span>
+            <span className="admin-tab-copy">
+              <strong>{label}</strong>
+              <small>{hint}</small>
+            </span>
             <b>{count}</b>
           </button>
         ))}
@@ -143,7 +147,7 @@ export default function AdminPromptsPage() {
                       event.stopPropagation();
                       setSelectedPrompt(prompt);
                     }}>
-                      <FileText size={16} />
+                      <span className="admin-prompt-doc-icon"><FileText size={16} /></span>
                       <span>{prompt.title}</span>
                     </button>
                   </td>
