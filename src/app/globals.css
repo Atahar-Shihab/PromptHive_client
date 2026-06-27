@@ -9268,3 +9268,347 @@ body::before {
 [data-theme="light"] .hero h1 {
   color: var(--primary);
 }
+
+/* Admin moderation polish: compact segmented filters and in-page review card. */
+.admin-review-tabs {
+  grid-template-columns: repeat(4, minmax(128px, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface), var(--bg) 42%), color-mix(in srgb, var(--surface-2), var(--bg) 56%)),
+    var(--surface);
+}
+
+.admin-review-tabs button {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 13px;
+  text-align: left;
+  letter-spacing: 0;
+}
+
+.admin-review-tabs button b {
+  min-width: 28px;
+  height: 26px;
+  font-size: 0.78rem;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line), transparent 24%);
+}
+
+.admin-review-tabs button.active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--primary), transparent 44%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary), transparent 70%), color-mix(in srgb, var(--cyan), transparent 84%)),
+    color-mix(in srgb, var(--surface), var(--bg) 32%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff, transparent 86%),
+    0 12px 28px color-mix(in srgb, var(--primary), transparent 86%);
+}
+
+.admin-review-tabs button.active b {
+  color: var(--bg);
+  background: var(--text);
+}
+
+.admin-review-row {
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-review-row:hover,
+.admin-review-row:focus-visible {
+  background: color-mix(in srgb, var(--primary), transparent 94%);
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary), transparent 22%);
+  outline: none;
+}
+
+.admin-prompt-title-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-prompt-title-button:hover span,
+.admin-prompt-title-button:focus-visible span {
+  color: var(--primary);
+}
+
+.admin-review-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 24% 16%, color-mix(in srgb, var(--primary), transparent 78%), transparent 34%),
+    rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(12px);
+}
+
+.admin-review-panel {
+  position: relative;
+  width: min(1080px, 100%);
+  max-height: min(88vh, 920px);
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--line), var(--primary) 22%);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface), var(--bg) 24%), color-mix(in srgb, var(--surface-2), var(--bg) 48%)),
+    var(--bg);
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.46),
+    0 0 44px color-mix(in srgb, var(--primary), transparent 86%);
+}
+
+.admin-review-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+}
+
+.admin-review-cover {
+  position: relative;
+  min-height: 260px;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+}
+
+.admin-review-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.05);
+}
+
+.admin-review-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--bg), transparent 4%), color-mix(in srgb, var(--bg), transparent 30%) 56%, transparent),
+    linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg), transparent 2%));
+}
+
+.admin-review-cover-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  padding: 30px;
+}
+
+.admin-review-cover-copy h2 {
+  margin: 14px 0 10px;
+  color: var(--text);
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.98;
+}
+
+.admin-review-cover-copy p {
+  max-width: 680px;
+  margin: 0;
+  color: color-mix(in srgb, var(--text), transparent 20%);
+  line-height: 1.65;
+}
+
+.admin-review-body {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px;
+}
+
+.admin-review-meta-card,
+.admin-review-content-card,
+.admin-review-feedback {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface), var(--bg) 36%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff, transparent 92%);
+}
+
+.admin-review-meta-card {
+  align-self: start;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.admin-review-meta-list {
+  display: grid;
+  gap: 9px;
+}
+
+.admin-review-meta-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.admin-review-meta-list svg {
+  color: var(--primary);
+}
+
+.admin-review-tags {
+  padding-top: 6px;
+}
+
+.admin-review-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.admin-review-actions .admin-action-btn {
+  width: 100%;
+  min-height: 40px;
+}
+
+.admin-review-content-card {
+  min-height: 440px;
+  padding: 22px;
+}
+
+.admin-review-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.admin-review-section-head .eyebrow {
+  margin: 0;
+}
+
+.admin-review-section-head small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.admin-review-markdown {
+  display: grid;
+  gap: 14px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.admin-review-markdown h1,
+.admin-review-markdown h2,
+.admin-review-markdown h3 {
+  margin: 8px 0 0;
+  color: var(--text);
+}
+
+.admin-review-markdown p,
+.admin-review-markdown ul,
+.admin-review-markdown ol {
+  margin: 0;
+}
+
+.admin-review-markdown ul,
+.admin-review-markdown ol {
+  padding-left: 1.3rem;
+}
+
+.admin-review-markdown code,
+.admin-review-markdown pre {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg), #000 12%);
+}
+
+.admin-review-markdown code {
+  padding: 0.08rem 0.32rem;
+}
+
+.admin-review-markdown pre {
+  overflow: auto;
+  padding: 14px;
+}
+
+.admin-review-feedback {
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.admin-review-feedback strong {
+  color: var(--primary);
+}
+
+.admin-review-feedback p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+[data-theme="light"] .admin-review-overlay {
+  background:
+    radial-gradient(circle at 24% 16%, color-mix(in srgb, var(--primary), transparent 82%), transparent 34%),
+    rgba(15, 23, 42, 0.28);
+}
+
+[data-theme="light"] .admin-review-panel,
+[data-theme="light"] .admin-review-meta-card,
+[data-theme="light"] .admin-review-content-card,
+[data-theme="light"] .admin-review-feedback {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 900px) {
+  .admin-review-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-review-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-review-overlay {
+    align-items: end;
+    padding: 10px;
+  }
+
+  .admin-review-tabs {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .admin-review-tabs button {
+    min-width: 152px;
+  }
+
+  .admin-review-panel {
+    max-height: 92vh;
+    border-radius: 22px;
+  }
+
+  .admin-review-cover {
+    min-height: 230px;
+  }
+
+  .admin-review-cover-copy {
+    padding: 24px 18px;
+  }
+
+  .admin-review-body {
+    padding: 14px;
+  }
+
+  .admin-review-section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

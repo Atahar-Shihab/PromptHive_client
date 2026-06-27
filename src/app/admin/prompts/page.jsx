@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { toast } from "react-toastify";
-import { Check, FileText, ShieldCheck, Star, Trash2, X } from "lucide-react";
+import { Check, Copy, Eye, FileText, Lock, ShieldCheck, Sparkles, Star, Trash2, UserRound, X } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Spinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/dashboard/NeuralWidgets";
@@ -13,6 +15,7 @@ export default function AdminPromptsPage() {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState("pending");
   const [busyId, setBusyId] = useState("");
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
 
   async function load() {
     try {
@@ -41,6 +44,7 @@ export default function AdminPromptsPage() {
         body: JSON.stringify({ status, rejectionFeedback })
       });
       toast.success(`Prompt ${status}`);
+      setSelectedPrompt(null);
       load();
     } catch (requestError) {
       toast.error(requestError?.message ?? `Could not mark prompt as ${status}.`);
@@ -54,6 +58,7 @@ export default function AdminPromptsPage() {
       setBusyId(`${id}-feature`);
       await apiFetch(`/api/prompts/${id}/feature`, { method: "PATCH" });
       toast.success("Featured status changed");
+      setSelectedPrompt((current) => (current?._id === id ? { ...current, featured: !current.featured } : current));
       load();
     } catch (requestError) {
       toast.error(requestError?.message ?? "Could not change featured status.");
@@ -68,6 +73,7 @@ export default function AdminPromptsPage() {
       setBusyId(`${id}-delete`);
       await apiFetch(`/api/prompts/${id}`, { method: "DELETE" });
       toast.success("Prompt deleted");
+      setSelectedPrompt(null);
       load();
     } catch (requestError) {
       toast.error(requestError?.message ?? "Could not delete prompt.");
@@ -123,21 +129,32 @@ export default function AdminPromptsPage() {
             <thead><tr><th>Prompt</th><th>Creator</th><th>Status</th><th>Visibility</th><th>Actions</th></tr></thead>
             <tbody>
               {visiblePrompts.map((prompt) => (
-                <tr key={prompt._id}>
+                <tr
+                  key={prompt._id}
+                  className="admin-review-row"
+                  tabIndex={0}
+                  onClick={() => setSelectedPrompt(prompt)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") setSelectedPrompt(prompt);
+                  }}
+                >
                   <td>
-                    <Link className="admin-prompt-title" href={`/prompts/${prompt._id}`}>
+                    <button className="admin-prompt-title admin-prompt-title-button" type="button" onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedPrompt(prompt);
+                    }}>
                       <FileText size={16} />
                       <span>{prompt.title}</span>
-                    </Link>
+                    </button>
                   </td>
                   <td>{prompt.creator?.name || prompt.creator?.email || "Unknown creator"}</td>
                   <td><span className={`stamp-badge stamp-badge--${prompt.status}`}>{prompt.status}</span></td>
                   <td>{prompt.visibility}</td>
                   <td className="admin-action-row">
-                    <button className="admin-action-btn approve" disabled={Boolean(busyId)} title="Approve" onClick={() => moderate(prompt._id, "approved")}><Check size={16} /> Approve</button>
-                    <button className="admin-action-btn reject" disabled={Boolean(busyId)} title="Reject" onClick={() => moderate(prompt._id, "rejected")}><X size={16} /> Reject</button>
-                    <button className="admin-action-btn feature" disabled={Boolean(busyId)} title="Feature" onClick={() => feature(prompt._id)}><Star size={16} /> Feature</button>
-                    <button className="admin-action-btn delete" disabled={Boolean(busyId)} title="Delete" onClick={() => remove(prompt._id)}><Trash2 size={16} /> Delete</button>
+                    <button className="admin-action-btn approve" disabled={Boolean(busyId)} title="Approve" onClick={(event) => { event.stopPropagation(); moderate(prompt._id, "approved"); }}><Check size={16} /> Approve</button>
+                    <button className="admin-action-btn reject" disabled={Boolean(busyId)} title="Reject" onClick={(event) => { event.stopPropagation(); moderate(prompt._id, "rejected"); }}><X size={16} /> Reject</button>
+                    <button className="admin-action-btn feature" disabled={Boolean(busyId)} title="Feature" onClick={(event) => { event.stopPropagation(); feature(prompt._id); }}><Star size={16} /> Feature</button>
+                    <button className="admin-action-btn delete" disabled={Boolean(busyId)} title="Delete" onClick={(event) => { event.stopPropagation(); remove(prompt._id); }}><Trash2 size={16} /> Delete</button>
                   </td>
                 </tr>
               ))}
@@ -147,6 +164,64 @@ export default function AdminPromptsPage() {
           <EmptyState title="No prompts in this queue" text="Submitted prompts will appear here automatically with pending status. Try All Prompts if you want to audit every item." />
         )}
       </div>
+      {selectedPrompt && (
+        <div className="admin-review-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-review-title" onClick={() => setSelectedPrompt(null)}>
+          <article className="admin-review-panel" onClick={(event) => event.stopPropagation()}>
+            <button className="icon-button admin-review-close" type="button" aria-label="Close review card" onClick={() => setSelectedPrompt(null)}>
+              <X size={18} />
+            </button>
+            <div className="admin-review-cover">
+              <img
+                src={selectedPrompt.thumbnailUrl || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80"}
+                alt=""
+              />
+              <div className="admin-review-cover-scrim" />
+              <div className="admin-review-cover-copy">
+                <span className={`stamp-badge stamp-badge--${selectedPrompt.status}`}>{selectedPrompt.status}</span>
+                {selectedPrompt.visibility === "private" && <span className="stamp-badge stamp-badge--premium"><Lock size={13} /> Premium</span>}
+                <h2 id="admin-review-title">{selectedPrompt.title}</h2>
+                <p>{selectedPrompt.description}</p>
+              </div>
+            </div>
+            <div className="admin-review-body">
+              <aside className="admin-review-meta-card">
+                <p className="eyebrow">Submission Details</p>
+                <div className="admin-review-meta-list">
+                  <span><Sparkles size={15} /> {selectedPrompt.category}</span>
+                  <span><FileText size={15} /> {selectedPrompt.aiTool}</span>
+                  <span><ShieldCheck size={15} /> {selectedPrompt.difficulty}</span>
+                  <span><Copy size={15} /> {selectedPrompt.copyCount ?? 0} copies</span>
+                  <span><UserRound size={15} /> {selectedPrompt.creator?.name || "Unknown creator"}</span>
+                </div>
+                <div className="tag-row admin-review-tags">
+                  {selectedPrompt.tags?.length ? selectedPrompt.tags.map((tag) => <span key={tag}>#{tag}</span>) : <span>No tags</span>}
+                </div>
+                <div className="admin-review-actions">
+                  <button className="admin-action-btn approve" disabled={Boolean(busyId)} onClick={() => moderate(selectedPrompt._id, "approved")}><Check size={16} /> Approve</button>
+                  <button className="admin-action-btn reject" disabled={Boolean(busyId)} onClick={() => moderate(selectedPrompt._id, "rejected")}><X size={16} /> Reject</button>
+                  <button className="admin-action-btn feature" disabled={Boolean(busyId)} onClick={() => feature(selectedPrompt._id)}><Star size={16} /> {selectedPrompt.featured ? "Unfeature" : "Feature"}</button>
+                  <Link className="admin-action-btn" href={`/prompts/${selectedPrompt._id}`}><Eye size={16} /> Open Page</Link>
+                </div>
+              </aside>
+              <section className="admin-review-content-card">
+                <div className="admin-review-section-head">
+                  <p className="eyebrow">Prompt Content</p>
+                  <small>Review quality before approval</small>
+                </div>
+                <div className="admin-review-markdown">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedPrompt.content}</ReactMarkdown>
+                </div>
+                {selectedPrompt.rejectionFeedback && (
+                  <div className="admin-review-feedback">
+                    <strong>Rejection feedback</strong>
+                    <p>{selectedPrompt.rejectionFeedback}</p>
+                  </div>
+                )}
+              </section>
+            </div>
+          </article>
+        </div>
+      )}
     </>
   );
 }
