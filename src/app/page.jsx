@@ -41,6 +41,33 @@ function uniquePrompts(...groups) {
   return Array.from(prompts.values());
 }
 
+function circularOffset(index, activeIndex, length) {
+  if (!length) return 0;
+  let offset = index - activeIndex;
+  const half = Math.floor(length / 2);
+  if (offset > half) offset -= length;
+  if (offset < -half) offset += length;
+  return offset;
+}
+
+function coverflowStyle(offset) {
+  const distance = Math.abs(offset);
+  const hidden = distance > 3;
+  const x = offset * 196;
+  const y = distance * 14;
+  const scale = Math.max(0.72, 1 - distance * 0.09);
+  const rotate = offset * -5;
+  const rotateY = offset * -12;
+
+  return {
+    zIndex: 80 - distance,
+    opacity: hidden ? 0 : 1 - distance * 0.15,
+    pointerEvents: hidden ? "none" : "auto",
+    filter: distance ? `saturate(${1 - distance * 0.08}) brightness(${1 - distance * 0.06})` : "none",
+    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${offset === 0 ? 1.04 : scale})`
+  };
+}
+
 export default function HomePage() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
@@ -59,7 +86,6 @@ export default function HomePage() {
       .slice(0, 8);
   }, [carouselPrompts, featured]);
 
-  const activePremium = premiumSlides.length ? premiumSlides[activeSlide % premiumSlides.length] : null;
   const loggedInCta = mounted && Boolean(session);
 
   useEffect(() => {
@@ -280,112 +306,87 @@ export default function HomePage() {
         </div>
         {loading ? (
           <SkeletonGrid />
-        ) : activePremium ? (
-          <div className="premium-vault-showcase">
-            <motion.article
-              className={`vault-feature-card${activePremium.visibility === "private" ? " is-premium" : ""}`}
-              key={activePremium._id}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 180, damping: 22 }}
-            >
-              <div className="vault-feature-media">
-                <img
-                  src={activePremium.thumbnailUrl || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80"}
-                  alt={activePremium.title}
-                />
-                <div className="vault-media-overlay" />
-                <span className="vault-status-chip">
-                  {activePremium.visibility === "private" ? <Lock size={14} /> : <Sparkles size={14} />}
-                  {activePremium.visibility === "private" ? "Premium Vault" : "Open Collection"}
-                </span>
-                {activePremium.visibility === "private" && (
-                  <span className="vault-unlock-chip">
-                    <Crown size={14} /> $5 unlock
-                  </span>
-                )}
-              </div>
+        ) : premiumSlides.length ? (
+          <div className="premium-coverflow" aria-label="Premium prompt coverflow carousel">
+            <button className="coverflow-arrow left" type="button" aria-label="Previous collection" onClick={() => movePremiumSlide(-1)}>
+              <ChevronLeft size={22} />
+            </button>
+            <button className="coverflow-arrow right" type="button" aria-label="Next collection" onClick={() => movePremiumSlide(1)}>
+              <ChevronRight size={22} />
+            </button>
 
-              <div className="vault-feature-content">
-                <div className="vault-kicker">
-                  <Gem size={16} />
-                  Curated creator workflow
-                </div>
-                <h3>{activePremium.title}</h3>
-                <p>{activePremium.description}</p>
+            <div className="premium-coverflow-stage">
+              {premiumSlides.map((prompt, index) => {
+                const activeIndex = activeSlide % premiumSlides.length;
+                const offset = circularOffset(index, activeIndex, premiumSlides.length);
+                const isActive = offset === 0;
+                const isVault = prompt.visibility === "private";
+                const promptImage = prompt.thumbnailUrl || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80";
 
-                <div className="vault-meta-grid">
-                  <span>
-                    <Copy size={16} />
-                    <strong>{activePremium.copyCount ?? 0}</strong>
-                    copies
-                  </span>
-                  <span>
-                    <Star size={16} />
-                    <strong>{Number(activePremium.rating ?? 0).toFixed(1)}</strong>
-                    rating
-                  </span>
-                  <span>
-                    <Zap size={16} />
-                    <strong>{activePremium.aiTool}</strong>
-                    tool
-                  </span>
-                </div>
-
-                <div className="vault-tags">
-                  {activePremium.tags?.slice(0, 4).map((tag) => (
-                    <span key={tag}>#{tag}</span>
-                  ))}
-                </div>
-
-                <div className="vault-actions">
-                  <Link href={`/prompts/${activePremium._id}`} className="button">
-                    View Prompt <ArrowRight size={18} />
-                  </Link>
-                  <Link href="/payment" className="button secondary">
-                    Unlock Premium
-                  </Link>
-                </div>
-              </div>
-            </motion.article>
-
-            <aside className="vault-queue-panel" aria-label="Premium prompt collection">
-              <div className="vault-queue-head">
-                <div>
-                  <span>Vault Queue</span>
-                  <strong>{premiumSlides.length} collections</strong>
-                </div>
-                <div className="vault-queue-controls">
-                  <button type="button" aria-label="Previous premium prompt" onClick={() => movePremiumSlide(-1)}>
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button type="button" aria-label="Next premium prompt" onClick={() => movePremiumSlide(1)}>
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="vault-queue-list">
-                {premiumSlides.map((prompt, index) => (
-                  <button
-                    aria-current={index === activeSlide % premiumSlides.length}
-                    className={index === activeSlide % premiumSlides.length ? "active" : ""}
+                return (
+                  <motion.article
+                    aria-current={isActive}
+                    aria-hidden={Math.abs(offset) > 3}
+                    className={`coverflow-card${isActive ? " active" : ""}${isVault ? " vault" : ""}`}
                     key={prompt._id}
-                    type="button"
                     onClick={() => setActiveSlide(index)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") setActiveSlide(index);
+                    }}
+                    role="button"
+                    tabIndex={Math.abs(offset) > 3 ? -1 : 0}
+                    style={coverflowStyle(offset)}
+                    transition={{ type: "spring", stiffness: 180, damping: 24 }}
+                    whileHover={isActive ? { y: -8 } : { y: -4 }}
                   >
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <div>
-                      <strong>{prompt.title}</strong>
-                      <small>{prompt.aiTool} / {prompt.difficulty}</small>
-                    </div>
-                    {prompt.visibility === "private" ? <Lock size={16} /> : <Sparkles size={16} />}
-                  </button>
-                ))}
-              </div>
-            </aside>
+                    {isVault && (
+                      <div className="coverflow-vault-beam" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                    )}
 
-            <div className="vault-showcase-dots" aria-label="Premium carousel pagination">
+                    <div className="coverflow-card-image">
+                      <img src={promptImage} alt={prompt.title} />
+                      <span className={isVault ? "vault-badge" : ""}>
+                        {isVault ? <Lock size={13} /> : <Sparkles size={13} />}
+                        {isVault ? "Premium Vault" : prompt.category}
+                      </span>
+                      {isVault && (
+                        <div className="coverflow-vault-lock">
+                          <Crown size={14} />
+                          <small>$5 unlock</small>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="coverflow-card-body">
+                      <div className={isVault ? "coverflow-vault-strip" : "coverflow-vault-strip public"}>
+                        {isVault ? <Lock size={14} /> : <Sparkles size={14} />}
+                        {isVault ? "Private workflow locked in the vault" : "Open creator workflow"}
+                      </div>
+                      <h3>{prompt.title}</h3>
+                      <p>{prompt.aiTool} / {prompt.difficulty}</p>
+                      <p className="coverflow-description">{prompt.description}</p>
+                      <div className="coverflow-tags">
+                        {prompt.tags?.slice(0, 3).map((tag) => (
+                          <span key={tag}>#{tag}</span>
+                        ))}
+                      </div>
+                      <div className="coverflow-card-bottom">
+                        <strong>{prompt.copyCount ?? 0} copies</strong>
+                        <Link href={`/prompts/${prompt._id}`} className="coverflow-detail-button" onClick={(event) => event.stopPropagation()}>
+                          Details <ArrowRight size={15} />
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+
+            <div className="coverflow-dots" aria-label="Premium carousel pagination">
               {premiumSlides.map((prompt, index) => (
                 <button
                   aria-label={`Show ${prompt.title}`}
@@ -395,6 +396,15 @@ export default function HomePage() {
                   onClick={() => setActiveSlide(index)}
                 />
               ))}
+            </div>
+
+            <div className="coverflow-actions">
+              <Link href="/prompts" className="button">
+                Browse All Collections <ArrowRight size={18} />
+              </Link>
+              <Link href="/payment" className="button secondary">
+                Unlock Premium
+              </Link>
             </div>
           </div>
         ) : (

@@ -3618,6 +3618,41 @@ th {
   font-weight: 850;
 }
 
+.profile-photo-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 13px 14px;
+  border: 1px dashed color-mix(in srgb, var(--primary), transparent 60%);
+  border-radius: 18px;
+  color: var(--muted);
+  background:
+    radial-gradient(circle at 10% 20%, color-mix(in srgb, var(--primary), transparent 88%), transparent 34%),
+    color-mix(in srgb, var(--surface), var(--bg) 42%);
+}
+
+.profile-photo-summary svg {
+  flex: 0 0 auto;
+  color: var(--primary);
+}
+
+.profile-photo-summary strong,
+.profile-photo-summary span {
+  display: block;
+}
+
+.profile-photo-summary strong {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.profile-photo-summary span {
+  margin-top: 3px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .profile-upload-row {
   display: flex;
   flex-wrap: wrap;
@@ -8541,6 +8576,118 @@ th {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03)),
     rgba(255, 255, 255, 0.045);
+}
+
+.auth-photo-picker {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 86px;
+  padding: 12px;
+  border: 1px dashed color-mix(in srgb, var(--primary), transparent 48%);
+  border-radius: 22px;
+  color: var(--text) !important;
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--primary), transparent 84%), transparent 32%),
+    color-mix(in srgb, var(--surface), var(--bg) 42%);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.auth-photo-picker:hover,
+.auth-photo-picker:focus-within {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--cyan), transparent 34%);
+  box-shadow:
+    0 18px 36px color-mix(in srgb, var(--primary), transparent 82%),
+    0 0 28px color-mix(in srgb, var(--cyan), transparent 88%);
+}
+
+.auth-photo-picker input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.auth-photo-frame {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary), transparent 62%);
+  border-radius: 18px;
+  color: var(--primary);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 30%),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary), transparent 72%), color-mix(in srgb, var(--cyan), transparent 76%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.auth-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-photo-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.auth-photo-copy strong {
+  color: var(--text);
+  font-size: 0.96rem;
+  line-height: 1.2;
+}
+
+.auth-photo-copy small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.auth-photo-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--primary), transparent 58%);
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--bg), #000 28%);
+  background: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .auth-photo-picker {
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--primary), transparent 88%), transparent 32%),
+    rgba(255, 255, 255, 0.74);
+}
+
+[data-theme="light"] .auth-photo-action {
+  color: #fffaf0;
+}
+
+@media (max-width: 560px) {
+  .auth-photo-picker {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .auth-photo-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
 }
 
 .button.secondary.google-auth-button:hover:not(:disabled),

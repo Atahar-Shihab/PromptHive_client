@@ -135,10 +135,13 @@ export default function ProfilePage() {
             Display name
             <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" />
           </label>
-          <label>
-            Photo URL
-            <input value={image} onChange={(event) => { setImage(event.target.value); setImageFailed(false); }} placeholder="Optional image URL" />
-          </label>
+          <div className="profile-photo-summary">
+            <Camera size={18} />
+            <div>
+              <strong>Profile photo</strong>
+              <span>{hasPhoto ? "Using your current Google or uploaded image." : "Upload an optional photo from your computer."}</span>
+            </div>
+          </div>
         </div>
         <div className="profile-upload-row">
           <label className="button secondary">

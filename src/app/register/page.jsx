@@ -1,39 +1,95 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { Crown, PenTool, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Crown, ImagePlus, PenTool, ShieldCheck, Sparkles, Star } from "lucide-react";
 import { authClient, clearStoredAuthTokens, clientCallbackURL } from "@/lib/auth-client";
+import { apiFetch } from "@/lib/api";
 import { roleHomePath } from "@/lib/role-home";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isPending && session) router.replace(roleHomePath(session.user?.role));
   }, [isPending, router, session]);
 
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreview("");
+      return undefined;
+    }
+
+    const previewUrl = URL.createObjectURL(photoFile);
+    setPhotoPreview(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [photoFile]);
+
+  function choosePhoto(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be 2MB or smaller.");
+      event.target.value = "";
+      return;
+    }
+
+    setPhotoFile(file);
+  }
+
   async function submit(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const name = String(form.get("name")).trim();
     try {
+      setSubmitting(true);
       clearStoredAuthTokens();
       const result = await authClient.signUp.email({
-        name: String(form.get("name")),
+        name,
         email: String(form.get("email")),
-        image: String(form.get("image")),
         password: String(form.get("password")),
         callbackURL: clientCallbackURL("/dashboard")
       });
       if (result?.error) return toast.error(result.error.message ?? "Registration failed");
+
+      if (photoFile) {
+        try {
+          const uploadData = new FormData();
+          uploadData.append("image", photoFile);
+          const uploaded = await apiFetch("/api/uploads", {
+            method: "POST",
+            body: uploadData
+          });
+
+          await apiFetch("/api/users/me", {
+            method: "PATCH",
+            body: JSON.stringify({ name, image: uploaded.url })
+          });
+        } catch {
+          toast.warn("Account created, but photo upload failed. You can upload it later from Profile.");
+        }
+      }
+
       toast.success("Account created");
       router.push("/dashboard");
     } catch (error) {
       toast.error(error?.message ?? "Registration failed");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -87,16 +143,23 @@ export default function RegisterPage() {
           Email
           <input type="email" name="email" required placeholder="you@example.com" />
         </label>
-        <label>
-          Profile photo URL <span className="auth-optional">Optional</span>
-          <input name="image" placeholder="https://..." />
+        <label className="auth-photo-picker">
+          <span className="auth-photo-frame">
+            {photoPreview ? <img src={photoPreview} alt="Selected profile preview" /> : <ImagePlus size={26} />}
+          </span>
+          <span className="auth-photo-copy">
+            <strong>Upload profile photo</strong>
+            <small>Optional JPG, PNG, or WEBP up to 2MB.</small>
+          </span>
+          <span className="auth-photo-action">{photoFile ? "Change image" : "Choose image"}</span>
+          <input type="file" accept="image/*" onChange={choosePhoto} />
         </label>
         <label>
           Password
           <input type="password" name="password" required minLength={8} placeholder="Minimum 8 characters" />
         </label>
-        <button className="button" type="submit">
-          Register
+        <button className="button" type="submit" disabled={submitting}>
+          {submitting ? "Creating account..." : "Register"}
         </button>
         <div className="auth-divider"><span>or</span></div>
         <button className="button secondary google-auth-button" type="button" onClick={googleLogin}>
