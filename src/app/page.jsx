@@ -117,7 +117,7 @@ export default function HomePage() {
             <span className="eyebrow">
               <Sparkles size={16} /> Community prompt marketplace
             </span>
-            <h1>PromptHive</h1>
+            <h1 className="hero-brand-title">PromptHive</h1>
             <p>
               A futuristic prompt marketplace where creators publish premium AI workflows and teams discover prompts for
               ChatGPT, Gemini, Claude, Midjourney, and more.
