@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Github, Linkedin, Sparkles } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
+import { BrandMark } from "./BrandMark";
 
 export function Footer() {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export function Footer() {
       <div>
         <Link href="/" className="brand">
           <span className="brand-mark">
-            <Sparkles size={18} />
+            <BrandMark />
           </span>
           <span>PromptHive</span>
         </Link>

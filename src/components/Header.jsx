@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { LogOut, Menu, Sparkles, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { authClient, clearStoredAuthTokens } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 import { roleHomePath } from "@/lib/role-home";
+import { BrandMark } from "./BrandMark";
 import { ThemeToggle } from "./ThemeToggle";
 
 const links = [
@@ -60,7 +61,7 @@ export function Header() {
     <header className="site-header">
       <Link href="/" className="brand" aria-label="PromptHive home">
         <span className="brand-mark">
-          <Sparkles size={20} />
+          <BrandMark />
         </span>
         <span>PromptHive</span>
       </Link>

@@ -6,7 +6,12 @@ import { Providers } from "@/components/Providers";
 
 export const metadata = {
   title: "PromptHive - AI Prompt Sharing Marketplace",
-  description: "Create, discover, bookmark, review, and monetize high-quality AI prompts."
+  description: "Create, discover, bookmark, review, and monetize high-quality AI prompts.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg"
+  }
 };
 
 const themeScript = `

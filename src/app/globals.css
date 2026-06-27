@@ -9269,6 +9269,96 @@ body::before {
   color: var(--primary);
 }
 
+.brand-mark,
+.dashboard-sidebar-logo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary), #ffffff 18%);
+  border-radius: 15px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.34), transparent 24%),
+    linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--primary-dark), var(--cyan) 22%) 62%, var(--cyan));
+  color: color-mix(in srgb, var(--bg), #000 20%);
+  box-shadow:
+    0 16px 30px color-mix(in srgb, var(--primary), transparent 76%),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.14);
+}
+
+.brand-mark::after,
+.dashboard-sidebar-logo::after {
+  content: "";
+  position: absolute;
+  inset: -35% -65%;
+  z-index: 0;
+  background: linear-gradient(100deg, transparent 38%, rgba(255, 255, 255, 0.34) 48%, transparent 60%);
+  transform: rotate(18deg) translateX(-35%);
+  transition: transform 550ms ease;
+}
+
+.brand:hover .brand-mark::after,
+.dashboard-sidebar-logo:hover::after {
+  transform: rotate(18deg) translateX(36%);
+}
+
+.brand-mark svg,
+.dashboard-sidebar-logo svg {
+  position: relative;
+  z-index: 1;
+  width: 72%;
+  height: 72%;
+  display: block;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22));
+}
+
+.brand-mark-cell-main {
+  fill: rgba(255, 248, 234, 0.18);
+  stroke: rgba(255, 248, 234, 0.82);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+
+.brand-mark-cell-left {
+  fill: color-mix(in srgb, var(--gold), #ffffff 18%);
+  stroke: rgba(22, 20, 15, 0.72);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.brand-mark-cell-right {
+  fill: color-mix(in srgb, var(--cyan), #ffffff 8%);
+  stroke: rgba(22, 20, 15, 0.64);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+.brand-mark-caret,
+.brand-mark-orbit {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-mark-caret {
+  stroke-width: 3.2;
+}
+
+.brand-mark-orbit {
+  stroke-width: 1.8;
+  opacity: 0.76;
+}
+
+[data-theme="light"] .brand-mark,
+[data-theme="light"] .dashboard-sidebar-logo {
+  border-color: color-mix(in srgb, var(--primary), #ffffff 42%);
+  box-shadow:
+    0 16px 28px rgba(196, 80, 46, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.1);
+}
+
 /* Admin moderation polish: compact segmented filters and in-page review card. */
 .admin-review-tabs {
   grid-template-columns: repeat(4, minmax(128px, 1fr));
@@ -9610,5 +9700,362 @@ body::before {
   .admin-review-section-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+/* Final moderation console refinement. */
+.admin-review-tabs {
+  align-items: stretch;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--line), var(--primary) 18%);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--primary), transparent 88%), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--surface), var(--bg) 18%), color-mix(in srgb, var(--surface-2), var(--bg) 46%)),
+    var(--surface);
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 color-mix(in srgb, #fff, transparent 92%);
+}
+
+.admin-review-tabs button {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line), transparent 10%);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface), var(--bg) 34%), color-mix(in srgb, var(--surface-2), var(--bg) 56%));
+  color: color-mix(in srgb, var(--text), transparent 22%);
+  text-align: left;
+}
+
+.admin-review-tabs button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 12% 14%, color-mix(in srgb, var(--primary), transparent 72%), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary), transparent 80%), color-mix(in srgb, var(--cyan), transparent 88%));
+  transition: opacity 180ms ease;
+}
+
+.admin-review-tabs button:hover,
+.admin-review-tabs button:focus-visible {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--primary), transparent 48%);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--primary), transparent 88%);
+}
+
+.admin-review-tabs button:hover::before,
+.admin-review-tabs button:focus-visible::before,
+.admin-review-tabs button.active::before {
+  opacity: 1;
+}
+
+.admin-review-tabs button.active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--primary), transparent 24%);
+  box-shadow:
+    0 18px 38px color-mix(in srgb, var(--primary), transparent 84%),
+    inset 0 1px 0 color-mix(in srgb, #fff, transparent 82%);
+}
+
+.admin-review-tabs button.approved.active {
+  border-color: rgba(52, 211, 153, 0.42);
+}
+
+.admin-review-tabs button.rejected.active {
+  border-color: rgba(248, 113, 113, 0.42);
+}
+
+.admin-review-tabs button.all.active {
+  border-color: color-mix(in srgb, var(--cyan), transparent 48%);
+}
+
+.admin-tab-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary), transparent 88%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff, transparent 82%);
+}
+
+.admin-review-tabs button.approved .admin-tab-icon {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.admin-review-tabs button.rejected .admin-tab-icon {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.admin-review-tabs button.all .admin-tab-icon {
+  color: var(--cyan);
+  background: color-mix(in srgb, var(--cyan), transparent 88%);
+}
+
+.admin-tab-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-tab-copy strong {
+  overflow: hidden;
+  color: inherit;
+  font-size: 0.92rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-tab-copy small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-review-tabs button b {
+  min-width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--line), transparent 6%);
+  color: var(--text);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2), #fff 4%), color-mix(in srgb, var(--surface), var(--bg) 20%));
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.admin-review-tabs button.active b {
+  color: color-mix(in srgb, var(--bg), #000 28%);
+  background: color-mix(in srgb, var(--text), #fff 8%);
+}
+
+.admin-moderation-table {
+  padding: 14px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 82% 8%, color-mix(in srgb, var(--cyan), transparent 92%), transparent 26%),
+    linear-gradient(135deg, color-mix(in srgb, var(--surface), var(--bg) 20%), color-mix(in srgb, var(--surface-2), var(--bg) 50%)),
+    var(--surface);
+}
+
+.admin-moderation-table table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  table-layout: fixed;
+}
+
+.admin-moderation-table th {
+  border: 0;
+  padding: 0 12px 8px;
+  color: color-mix(in srgb, var(--muted), var(--text) 18%);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.admin-moderation-table td {
+  border-top: 1px solid color-mix(in srgb, var(--line), transparent 26%);
+  border-bottom: 1px solid color-mix(in srgb, var(--line), transparent 26%);
+  padding: 16px 12px;
+  background: color-mix(in srgb, var(--surface), var(--bg) 34%);
+  color: var(--text);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  vertical-align: middle;
+}
+
+.admin-moderation-table td:first-child {
+  border-left: 1px solid color-mix(in srgb, var(--line), transparent 26%);
+  border-radius: 16px 0 0 16px;
+}
+
+.admin-moderation-table td:last-child {
+  border-right: 1px solid color-mix(in srgb, var(--line), transparent 26%);
+  border-radius: 0 16px 16px 0;
+}
+
+.admin-review-row:hover td,
+.admin-review-row:focus-visible td {
+  border-color: color-mix(in srgb, var(--primary), transparent 45%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary), transparent 92%), color-mix(in srgb, var(--cyan), transparent 96%)),
+    color-mix(in srgb, var(--surface-2), var(--bg) 38%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff, transparent 90%);
+}
+
+.admin-prompt-title {
+  max-width: 100%;
+  color: var(--text);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 900;
+}
+
+.admin-prompt-title span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-prompt-doc-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--cyan);
+  background: color-mix(in srgb, var(--cyan), transparent 90%);
+}
+
+.admin-moderation-table .stamp-badge {
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 0 10px;
+  box-shadow: none;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  transform: none;
+}
+
+.admin-moderation-table .stamp-badge--pending {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.admin-moderation-table .stamp-badge--approved {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.admin-moderation-table .stamp-badge--rejected {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.admin-action-row {
+  gap: 7px;
+  align-items: center;
+}
+
+.admin-action-btn {
+  min-height: 34px;
+  padding: 0 11px;
+  border-color: color-mix(in srgb, var(--line), transparent 8%);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2), #fff 2%), color-mix(in srgb, var(--surface), var(--bg) 18%));
+  color: color-mix(in srgb, var(--text), transparent 8%);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+}
+
+.admin-action-btn.approve {
+  color: #34d399;
+}
+
+.admin-action-btn.reject,
+.admin-action-btn.delete {
+  color: #fca5a5;
+}
+
+.admin-action-btn.feature {
+  color: var(--gold);
+}
+
+.admin-action-btn:hover:not(:disabled),
+.admin-action-btn:focus-visible:not(:disabled) {
+  border-color: currentColor;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.admin-action-btn.approve:hover:not(:disabled),
+.admin-action-btn.approve:focus-visible:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #34d399);
+}
+
+.admin-action-btn.reject:hover:not(:disabled),
+.admin-action-btn.reject:focus-visible:not(:disabled),
+.admin-action-btn.delete:hover:not(:disabled),
+.admin-action-btn.delete:focus-visible:not(:disabled) {
+  background: linear-gradient(135deg, #be123c, #f87171);
+}
+
+.admin-action-btn.feature:hover:not(:disabled),
+.admin-action-btn.feature:focus-visible:not(:disabled) {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gold), #a16207 35%), var(--primary));
+}
+
+[data-theme="light"] .admin-review-tabs,
+[data-theme="light"] .admin-moderation-table {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(196, 80, 46, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 248, 234, 0.82));
+  box-shadow: 0 22px 46px rgba(15, 23, 42, 0.1);
+}
+
+[data-theme="light"] .admin-review-tabs button,
+[data-theme="light"] .admin-moderation-table td,
+[data-theme="light"] .admin-action-btn {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+[data-theme="light"] .admin-tab-copy small {
+  color: #64748b;
+}
+
+[data-theme="light"] .admin-review-tabs button b {
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+[data-theme="light"] .admin-review-tabs button.active b {
+  color: #ffffff;
+  background: #0f172a;
+}
+
+@media (max-width: 1080px) {
+  .admin-review-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-moderation-table table {
+    min-width: 900px;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-review-tabs {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-review-tabs button {
+    min-width: 0;
   }
 }

@@ -25,6 +25,7 @@ import {
 import { authClient, clearStoredAuthTokens } from "@/lib/auth-client";
 import { absoluteUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/format";
+import { BrandMark } from "./BrandMark";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navConfig = {
@@ -230,7 +231,7 @@ export function DashboardShell({ user, mode, children }) {
         <div className={cn("dashboard-sidebar-head", collapsed && "collapsed")}>
           <div className={cn("dashboard-sidebar-brand", collapsed && "collapsed")}>
             <Link href="/" className="dashboard-sidebar-logo" title="Back to PromptHive home">
-              <Sparkles size={21} />
+              <BrandMark />
             </Link>
             {!collapsed && (
               <div className="min-w-0">
