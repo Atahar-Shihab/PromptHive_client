@@ -349,7 +349,7 @@ export default function HomePage() {
                       <img src={promptImage} alt={prompt.title} />
                       <span className={isVault ? "vault-badge" : ""}>
                         {isVault ? <Lock size={13} /> : <Sparkles size={13} />}
-                        {isVault ? "Premium Vault" : prompt.category}
+                        {isVault ? "Locked Workflow" : prompt.category}
                       </span>
                       {isVault && (
                         <div className="coverflow-vault-lock">
@@ -362,7 +362,7 @@ export default function HomePage() {
                     <div className="coverflow-card-body">
                       <div className={isVault ? "coverflow-vault-strip" : "coverflow-vault-strip public"}>
                         {isVault ? <Lock size={14} /> : <Sparkles size={14} />}
-                        {isVault ? "Private workflow locked in the vault" : "Open creator workflow"}
+                        {isVault ? "Premium workflow preview" : "Open creator workflow"}
                       </div>
                       <h3>{prompt.title}</h3>
                       <p>{prompt.aiTool} / {prompt.difficulty}</p>

@@ -2824,6 +2824,23 @@ th {
   fill: currentColor;
 }
 
+.copy-action {
+  transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.copy-action.copied {
+  color: #052e1c;
+  border-color: color-mix(in srgb, #34d399, transparent 28%);
+  background: linear-gradient(135deg, #34d399, #22d3ee);
+  box-shadow:
+    0 0 24px color-mix(in srgb, #34d399, transparent 72%),
+    0 0 26px color-mix(in srgb, var(--cyan), transparent 82%);
+}
+
+.copy-action.copied svg {
+  fill: currentColor;
+}
+
 .nexus-dashboard {
   display: grid;
   gap: 18px;
@@ -6303,69 +6320,100 @@ th {
 
 .prompt-test-report {
   display: grid;
-  grid-template-columns: 116px minmax(0, 1fr);
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 16px;
   margin-top: 18px;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--gold), transparent 66%);
+  border-radius: 24px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--primary), transparent 92%), color-mix(in srgb, var(--cyan), transparent 94.5%)),
-    rgba(255, 255, 255, 0.035);
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--gold), transparent 78%), transparent 34%),
+    radial-gradient(circle at 100% 8%, color-mix(in srgb, var(--cyan), transparent 84%), transparent 30%),
+    linear-gradient(145deg, rgba(39, 35, 28, 0.78), rgba(14, 17, 23, 0.84));
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.2),
+    0 0 34px color-mix(in srgb, var(--gold), transparent 88%) inset;
 }
 
 .test-score-card {
   display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 4px;
-  min-height: 116px;
-  border: 1px solid color-mix(in srgb, var(--cyan), transparent 80%);
-  border-radius: 16px;
+  grid-template-columns: 54px minmax(0, 1fr);
+  grid-template-areas:
+    "icon score"
+    "icon label";
+  align-items: center;
+  gap: 2px 14px;
+  min-height: 92px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--gold), transparent 66%);
+  border-radius: 20px;
   color: #f8fbff;
-  background: rgba(10, 10, 15, 0.34);
+  background:
+    linear-gradient(135deg, rgba(251, 191, 36, 0.13), rgba(34, 211, 238, 0.09)),
+    rgba(10, 10, 15, 0.38);
 }
 
 .test-score-card svg {
-  color: var(--cyan);
+  grid-area: icon;
+  width: 48px;
+  height: 48px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--gold), transparent 62%);
+  border-radius: 18px;
+  color: var(--gold);
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--gold), transparent 46%), transparent 50%),
+    rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--gold), transparent 78%);
 }
 
 .test-score-card strong {
-  font-size: 2.2rem;
+  grid-area: score;
+  color: #fff7ed;
+  font-size: clamp(2.1rem, 5vw, 3rem);
   line-height: 1;
 }
 
 .test-score-card span {
-  color: rgba(226, 232, 240, 0.74);
-  font-size: 0.78rem;
+  grid-area: label;
+  color: rgba(254, 243, 199, 0.82);
+  font-size: 0.86rem;
   font-weight: 900;
-  text-align: center;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .test-report-body > p {
   margin: 0 0 12px;
-  color: rgba(226, 232, 240, 0.78);
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  color: rgba(248, 250, 252, 0.82);
+  background: rgba(255, 255, 255, 0.045);
   line-height: 1.6;
 }
 
 .test-metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   margin-bottom: 14px;
 }
 
 .test-metrics span {
   display: grid;
-  gap: 3px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  min-width: 0;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 15px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
 }
 
 .test-metrics small {
-  color: rgba(226, 232, 240, 0.58);
+  color: rgba(254, 243, 199, 0.68);
   font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -6374,44 +6422,66 @@ th {
 
 .test-metrics b {
   color: #f8fbff;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
 }
 
 .test-report-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
 .test-report-grid > div {
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.022));
 }
 
 .test-report-grid h3 {
   display: flex;
   align-items: center;
   gap: 7px;
-  margin: 0 0 8px;
-  color: #f8fbff;
+  margin: 0 0 9px;
+  color: #fff7ed;
   font-size: 0.9rem;
 }
 
 .test-report-grid h3 svg {
-  color: var(--cyan);
+  color: var(--gold);
 }
 
 .test-report-grid p {
   margin: 7px 0 0;
-  color: rgba(226, 232, 240, 0.74);
+  color: rgba(226, 232, 240, 0.78);
   font-size: 0.86rem;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .test-output-raw {
   color: var(--text);
+}
+
+.qa-scan-button {
+  width: 100%;
+  justify-content: center;
+  min-height: 46px;
+  margin-top: 2px;
+  color: #111827;
+  background: linear-gradient(135deg, #f59e0b, #fb7185 48%, #22d3ee);
+  box-shadow:
+    0 18px 36px color-mix(in srgb, var(--gold), transparent 74%),
+    0 0 28px color-mix(in srgb, var(--cyan), transparent 86%);
+}
+
+.qa-scan-button:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow:
+    0 22px 44px color-mix(in srgb, var(--gold), transparent 66%),
+    0 0 34px color-mix(in srgb, var(--cyan), transparent 78%);
 }
 
 [data-theme="light"] .premium-prompt-card {
@@ -6447,6 +6517,43 @@ th {
 [data-theme="light"] .test-metrics small,
 [data-theme="light"] .test-report-grid p {
   color: #334155;
+}
+
+[data-theme="light"] .prompt-test-report {
+  border-color: color-mix(in srgb, var(--gold), transparent 54%);
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--gold), transparent 78%), transparent 34%),
+    radial-gradient(circle at 100% 8%, color-mix(in srgb, var(--cyan), transparent 84%), transparent 30%),
+    linear-gradient(145deg, rgba(255, 251, 235, 0.94), rgba(240, 249, 255, 0.92));
+  box-shadow:
+    0 22px 52px rgba(15, 23, 42, 0.1),
+    0 0 32px color-mix(in srgb, var(--gold), transparent 86%) inset;
+}
+
+[data-theme="light"] .test-score-card {
+  border-color: color-mix(in srgb, var(--gold), transparent 54%);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--gold), transparent 84%), color-mix(in srgb, var(--cyan), transparent 88%)),
+    rgba(255, 255, 255, 0.74);
+}
+
+[data-theme="light"] .test-score-card svg {
+  color: #b45309;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--gold), transparent 58%), transparent 50%),
+    rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .test-score-card span,
+[data-theme="light"] .test-metrics small,
+[data-theme="light"] .test-report-grid h3 svg {
+  color: #b45309;
+}
+
+[data-theme="light"] .test-report-body > p,
+[data-theme="light"] .test-metrics span,
+[data-theme="light"] .test-report-grid > div {
+  background: rgba(255, 255, 255, 0.62);
 }
 
 @media (max-width: 680px) {
@@ -7330,13 +7437,13 @@ th {
 }
 
 .premium-coverflow::after {
-  content: "Premium Vault";
+  content: "";
   position: absolute;
   top: 98px;
   left: 50%;
   z-index: 12;
   transform: translateX(-50%);
-  display: inline-flex;
+  display: none;
   align-items: center;
   min-height: 28px;
   padding: 0 14px;

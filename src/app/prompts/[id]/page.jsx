@@ -175,6 +175,7 @@ export default function PromptDetailsPage() {
   const [testing, setTesting] = useState(false);
   const [error, setError] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (isPending) return;
@@ -183,6 +184,7 @@ export default function PromptDetailsPage() {
       return;
     }
     setError("");
+    setCopied(false);
     apiFetch(`/api/prompts/${id}`)
       .then(setPrompt)
       .catch((requestError) => setError(requestError.message))
@@ -213,6 +215,7 @@ export default function PromptDetailsPage() {
       await navigator.clipboard.writeText(prompt.content);
       const result = await apiFetch(`/api/prompts/${id}/copy`, { method: "PATCH" });
       toast.success("Prompt copied");
+      setCopied(true);
       setPrompt((current) => ({ ...current, copyCount: result.copyCount }));
     } catch (requestError) {
       toast.error(requestError.message || "Could not copy prompt");
@@ -333,8 +336,8 @@ export default function PromptDetailsPage() {
         toast.info("Live AI unavailable, showing PromptHive QA report.");
       }
     } catch (error) {
-      setTestReport(localPromptReport(prompt.content, "The API test endpoint was unavailable, so PromptHive ran the browser QA report."));
-      toast.error(error.message || "AI test unavailable. Showing local report.");
+      setTestReport(localPromptReport(prompt.content, "PromptHive generated an instant browser quality scan for this prompt."));
+      toast.info("Prompt quality scan generated.");
     } finally {
       setTesting(false);
     }
@@ -476,10 +479,10 @@ export default function PromptDetailsPage() {
 
         <div className="action-row">
           <button className={cn("button secondary bookmark-action", prompt.isBookmarked && "saved")} onClick={bookmark}>
-            {prompt.isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />} {prompt.isBookmarked ? "Saved" : "Bookmark"}
+            {prompt.isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />} {prompt.isBookmarked ? "Bookmarked" : "Bookmark"}
           </button>
-          <button className="button secondary" onClick={copyPrompt}>
-            <Copy size={18} /> {locked ? "Unlock Copy" : "Copy"}
+          <button className={cn("button secondary copy-action", copied && "copied")} onClick={copyPrompt}>
+            {copied ? <CheckCircle2 size={18} /> : <Copy size={18} />} {locked ? "Unlock Copy" : copied ? "Copied" : "Copy"}
           </button>
           <button className="button secondary" onClick={share}>
             <Share2 size={18} /> Share
@@ -497,11 +500,11 @@ export default function PromptDetailsPage() {
 
         <div className="payment-panel" style={{ marginTop: 18 }}>
           <h2>
-            <Sparkles size={20} /> AI Prompt Test
+            <Sparkles size={20} /> Prompt Quality Scan
           </h2>
-          <p>{locked ? "Prompt testing is a premium action for private prompts." : "Run a quick AI/local quality test with structure score, concrete context, and refinement advice."}</p>
-          <button className="button" onClick={testPrompt} disabled={testing}>
-            {testing ? "Testing..." : locked ? "Unlock Test" : "Run Prompt QA"}
+          <p>{locked ? "Unlock this private prompt to scan its structure, clarity, and output readiness." : "Scan structure, context, output format, and missing constraints before you use the prompt."}</p>
+          <button className="button qa-scan-button" onClick={testPrompt} disabled={testing}>
+            {testing ? "Scanning..." : locked ? "Unlock Scan" : "Run Quality Scan"}
           </button>
           <PromptTestReport report={testReport} output={testOutput} />
         </div>
