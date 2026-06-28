@@ -2,8 +2,17 @@
 
 import { API_URL } from "./constants";
 
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function apiFetch(path, options = {}) {
   const isFormData = options.body instanceof FormData;
+  const method = String(options.method ?? "GET").toUpperCase();
+  const canRetry = method === "GET" || method === "HEAD";
+  const attempts = canRetry ? 3 : 1;
   const buildHeaders = (includeStoredBearer = true) => {
     const headers = new Headers(options.headers);
     if (!isFormData && options.body && !headers.has("Content-Type")) {
@@ -24,23 +33,40 @@ export async function apiFetch(path, options = {}) {
     credentials: "include"
   });
 
+  const requestWithRetry = async (headers) => {
+    let lastError;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      try {
+        const response = await request(headers);
+        if (!canRetry || !RETRYABLE_STATUSES.has(response.status) || attempt === attempts - 1) {
+          return response;
+        }
+      } catch (error) {
+        lastError = error;
+        if (!canRetry || attempt === attempts - 1) throw error;
+      }
+      await wait(800 * (attempt + 1));
+    }
+    throw lastError;
+  };
+
   const headers = buildHeaders(true);
   const usedStoredBearer = typeof window !== "undefined" && Boolean(localStorage.getItem("bearer_token")) && !new Headers(options.headers).has("Authorization");
 
   let response;
   try {
-    response = await request(headers);
+    response = await requestWithRetry(headers);
   } catch {
-    throw new Error(`Could not reach the API at ${API_URL}. Make sure the Express server is running.`);
+    throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${API_URL}. Please wait a moment and refresh.`);
   }
 
   if ((response.status === 401 || response.status === 403) && usedStoredBearer) {
     localStorage.removeItem("bearer_token");
     localStorage.removeItem("jwt_token");
     try {
-      response = await request(buildHeaders(false));
+      response = await requestWithRetry(buildHeaders(false));
     } catch {
-      throw new Error(`Could not reach the API at ${API_URL}. Make sure the Express server is running.`);
+      throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${API_URL}. Please wait a moment and refresh.`);
     }
   }
 
