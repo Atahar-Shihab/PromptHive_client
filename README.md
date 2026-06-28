@@ -2,137 +2,107 @@
 
 # PromptHive Client
 
-### A polished Next.js marketplace interface for discovering, saving, reviewing, and unlocking premium AI prompts.
+### A premium Next.js marketplace interface for discovering, publishing, saving, reviewing, and unlocking AI prompts.
 
 <p>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-15-111111?style=for-the-badge&logo=nextdotjs&logoColor=white" />
   <img alt="React" src="https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
-  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" />
+  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-JSX-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" />
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind-CSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-  <img alt="Stripe" src="https://img.shields.io/badge/Stripe-Payments-635BFF?style=for-the-badge&logo=stripe&logoColor=white" />
+  <img alt="Stripe" src="https://img.shields.io/badge/Stripe-Premium-635BFF?style=for-the-badge&logo=stripe&logoColor=white" />
 </p>
 
 <p>
-  <a href="#live-links">Live Links</a>
+  <a href="https://prompt-hive-client.vercel.app">Live Site</a>
   <span> | </span>
-  <a href="#feature-suite">Features</a>
+  <a href="https://prompthive-server.onrender.com">Live API</a>
   <span> | </span>
-  <a href="#route-map">Route Map</a>
+  <a href="https://github.com/Atahar-Shihab/PromptHive_client">Client Repository</a>
   <span> | </span>
-  <a href="#local-setup">Local Setup</a>
-  <span> | </span>
-  <a href="#deployment">Deployment</a>
+  <a href="https://github.com/Atahar-Shihab/PromptHive_Server">Server Repository</a>
 </p>
 
 </div>
 
 ---
 
+## Overview
+
+PromptHive is an AI prompt sharing and marketplace platform for creators, teams, and premium prompt buyers. This repository contains the frontend application: a responsive Next.js interface with public discovery pages, protected dashboards, prompt details, premium checkout, profile management, and admin/creator/user workflows.
+
+The UI is designed around a polished marketplace identity with glass cards, prompt previews, role dashboards, premium states, dark/light themes, Framer Motion interactions, and mobile-first responsive layouts.
+
 ## Live Links
 
-| Item | Link |
+| Item | URL |
 | --- | --- |
-| Frontend Live URL | Add your deployed Vercel link here |
-| Backend API | Add your deployed Render API link here |
+| Frontend | https://prompt-hive-client.vercel.app |
+| Backend API | https://prompthive-server.onrender.com |
+| Client Repository | https://github.com/Atahar-Shihab/PromptHive_client |
 | Server Repository | https://github.com/Atahar-Shihab/PromptHive_Server |
 
-## Project Snapshot
+## Core Features
 
-PromptHive is the client application for a full-stack AI Prompt Sharing and Marketplace Platform. It gives users a refined marketplace experience where they can browse public prompts, unlock premium prompt content, publish new prompts, save favorites, review creators, and manage role-based dashboards.
-
-The interface follows an editorial "manuscript marketplace" identity: warm paper colors, typed prompt surfaces, stamped moderation badges, clean role dashboards, and responsive layouts built for mobile, tablet, and desktop.
-
-```text
-PromptHive Client
-|
-+-- Public Marketplace
-|   +-- Landing page
-|   +-- All prompts
-|   +-- Prompt details
-|   +-- Reviews and creators
-|
-+-- Private Workspace
-|   +-- User dashboard
-|   +-- Creator dashboard
-|   +-- Admin dashboard
-|
-+-- Premium Layer
-    +-- Stripe unlock
-    +-- Private prompt access
-    +-- Premium profile state
-```
-
-## Feature Suite
-
-| Area | What It Does |
+| Area | Included |
 | --- | --- |
-| Landing Experience | Hero search, trending tags, featured prompts, top creators, reviews, why choose us, premium showcase, and animated sections |
-| Prompt Marketplace | Server-powered search, category filters, AI tool filters, difficulty filters, sorting, pagination, and responsive prompt cards |
-| Prompt Details | Full prompt content, tags, tool, difficulty, copy count, creator info, reviews, bookmark, report, fork, share, copy, PDF download |
-| Premium Flow | Private prompts are locked for free users and unlocked after one-time Stripe payment |
-| Authentication | Email/password and Google login through Better Auth |
-| User Dashboard | Add prompt, my prompts, saved prompts, my reviews, profile, and premium upgrade |
-| Creator Dashboard | Creator overview, prompt submission, prompt management, and analytics views |
-| Admin Dashboard | Users, prompts, payments, reports, analytics, prompt approval, rejection feedback, feature prompt, and delete actions |
-| UI System | Dark/light theme, responsive sidebar, manuscript-style cards, stamped badges, loading UI, error UI, and 404 route |
+| Landing Page | Hero search, trending tags, featured prompts, premium carousel, creator cards, reviews, pricing, and feature sections |
+| Marketplace | Prompt search, category filter, AI tool filter, difficulty filter, premium/public access filter, sorting, pagination, and responsive cards |
+| Prompt Details | Full prompt view, locked premium content, creator info, tags, reviews, ratings, bookmark, copy, report, share, fork, PDF download, and quality scan |
+| Authentication | Email/password login, registration, Google sign-in, protected routes, and session-aware navigation |
+| User Workspace | Overview, add prompt, my prompts, saved prompts, my reviews, profile update, and premium upgrade path |
+| Creator Workspace | Creator analytics, prompt management, and publishing flow |
+| Admin Workspace | User management, prompt moderation, reports, payments, and analytics |
+| Premium Flow | One-time Stripe payment page for unlocking private prompts |
+| Profile Photos | Google profile image support plus optional local upload |
+| UI Quality | Dark/light theme, loading states, empty states, toasts, responsive sidebars, hover states, and mobile layouts |
 
-## Role Experience
+## Role-Based Experience
 
-| Role | Main Capabilities |
+| Role | Experience |
 | --- | --- |
-| User | Browse prompts, save prompts, review accessible prompts, report prompts, add up to three free prompts, upgrade to premium |
-| Creator | Publish prompts, manage submissions, view prompt analytics, track copies and growth |
-| Admin | Manage users, moderate prompts, review reports, inspect payments, view platform analytics |
+| User | Browse prompts, save bookmarks, review accessible prompts, report prompts, submit prompts, and upgrade to premium |
+| Creator | Publish prompts, manage submissions, inspect prompt performance, and build a prompt portfolio |
+| Admin | Approve/reject prompts, provide feedback, feature prompts, manage users, inspect payments, and resolve reports |
 
 ## Route Map
 
-| Route | Access | Purpose |
+| Route | Access | Description |
 | --- | --- | --- |
-| `/` | Public | Landing page with marketplace overview |
-| `/prompts` | Public | Browse all approved prompts |
-| `/prompts/[id]` | Private | View prompt details and interactions |
+| `/` | Public | Landing page and marketplace overview |
+| `/prompts` | Public | All approved prompts with filters and sorting |
+| `/prompts/[id]` | Private | Prompt details, reviews, copy, bookmark, report, fork, PDF, and premium lock |
 | `/login` | Public | Email and Google login |
-| `/register` | Public | New account registration |
+| `/register` | Public | Account registration with optional profile image upload |
 | `/payment` | Private | Stripe premium unlock |
-| `/dashboard` | User | User dashboard overview |
-| `/dashboard/add-prompt` | User | Submit a new prompt |
+| `/dashboard` | User | User overview |
+| `/dashboard/add-prompt` | User | Submit a prompt for admin review |
 | `/dashboard/my-prompts` | User | Manage own prompts |
-| `/dashboard/saved-prompts` | User | View bookmarked prompts |
-| `/dashboard/my-reviews` | User | View submitted reviews |
-| `/dashboard/profile` | User | Manage profile and subscription state |
-| `/creator` | Creator | Creator analytics overview |
-| `/creator/add-prompt` | Creator | Submit creator prompt |
-| `/creator/my-prompts` | Creator | Manage creator prompts |
+| `/dashboard/saved-prompts` | User | Bookmarked prompt library |
+| `/dashboard/my-reviews` | User | Submitted reviews |
+| `/dashboard/profile` | User | Profile and subscription state |
+| `/creator` | Creator | Creator dashboard |
+| `/creator/add-prompt` | Creator | Creator prompt submission |
+| `/creator/my-prompts` | Creator | Creator prompt management |
 | `/admin` | Admin | Admin overview |
-| `/admin/users` | Admin | Manage users and roles |
-| `/admin/prompts` | Admin | Approve, reject, feature, and delete prompts |
-| `/admin/payments` | Admin | Inspect premium transactions |
-| `/admin/reports` | Admin | Resolve reported prompts |
-| `/admin/analytics` | Admin | Platform statistics |
-
-## Design System
-
-| Token Role | Direction |
-| --- | --- |
-| Background | Warm near-black in dark mode, warm paper in light mode |
-| Primary | Terracotta action color for buttons and highlighted states |
-| Secondary | Moss green for creator and premium signals |
-| Accent | Aged brass for stars, featured moments, and premium detail |
-| Typography | Fraunces for headings, Inter for interface text, IBM Plex Mono for prompt content and data |
-| Badges | Reusable stamped badges for status, role, premium, and moderation labels |
+| `/admin/users` | Admin | User and role management |
+| `/admin/prompts` | Admin | Prompt moderation queue |
+| `/admin/payments` | Admin | Payment records |
+| `/admin/reports` | Admin | Report moderation |
+| `/admin/analytics` | Admin | Platform analytics |
 
 ## Tech Stack
 
-| Category | Packages |
+| Category | Tools |
 | --- | --- |
 | Framework | Next.js, React |
-| Styling | Tailwind CSS, custom global CSS |
+| Language | JavaScript and JSX |
+| Styling | Tailwind CSS, custom CSS design system |
 | Animation | Framer Motion |
 | Charts | Recharts |
 | Authentication | Better Auth client |
-| Payments | Stripe React, Stripe JS |
+| Payments | Stripe Elements, Stripe JS |
 | Notifications | React Toastify |
-| Markdown | React Markdown, remark-gfm |
+| Prompt Rendering | React Markdown, remark-gfm |
 | PDF Export | pdf-lib |
 | Icons | Lucide React |
 
@@ -145,12 +115,12 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
 ```
 
-| Variable | Required | Description |
+| Variable | Required | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | Yes | Express server URL used for API calls and uploaded images |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Yes | Stripe publishable key for the premium payment form |
+| `NEXT_PUBLIC_API_URL` | Yes | Express API URL for data, auth, payments, and uploaded images |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Yes | Stripe publishable key used by the premium payment form |
 
-Never commit `.env`.
+Do not commit `.env`.
 
 ## Local Setup
 
@@ -160,28 +130,30 @@ copy ".env.example" ".env"
 npm run dev
 ```
 
-Local client:
+Local app:
 
 ```text
 http://localhost:3000
 ```
 
-## Scripts
+The backend must also be running at the URL configured in `NEXT_PUBLIC_API_URL`.
+
+## Available Scripts
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start local Next.js development server |
-| `npm run build` | Create production build |
-| `npm run start` | Run production build |
-| `npm run clean` | Clean stale local Next.js cache |
+| `npm run dev` | Start the Next.js development server with cache cleanup helper |
+| `npm run clean` | Clean stale local `.next` cache |
+| `npm run build` | Build the production app |
+| `npm run start` | Start the production build |
 
-## Demo Credentials
+## Demo Admin
 
-The admin account is created by the backend seed script.
+The backend seed script creates the demo admin account.
 
 ```text
-Admin Email: admin@demo.com
-Admin Password: admin1234
+Email: admin@demo.com
+Password: admin1234
 ```
 
 ## Deployment
@@ -191,40 +163,40 @@ Recommended platform: Vercel.
 ```text
 Root Directory: AI Prompt Sharing & Marketplace Platform_client
 Build Command: npm run build
+Output: Next.js default
 ```
 
-Production variables:
+Production environment:
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-render-api.onrender.com
+NEXT_PUBLIC_API_URL=https://prompthive-server.onrender.com
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_key
 ```
 
+After pushing to GitHub, Vercel redeploys automatically from the connected repository.
+
 ## Quality Checklist
 
-- Landing page loads without runtime errors
-- All public routes reload correctly
-- Private routes preserve session after refresh
-- Google login and email login both work
-- Prompt details actions work: bookmark, copy, review, report, fork, share, PDF
-- Stripe test payment unlocks premium access
-- User, creator, and admin dashboards are responsive
-- Admin can approve, reject, feature, and delete prompts
+- Public pages load without runtime errors
+- Mobile, tablet, and desktop layouts are responsive
 - Dark and light themes keep text readable
+- Login, register, Google sign-in, and protected routes work
+- Prompt actions work: bookmark, copy, review, report, share, fork, PDF, quality scan
+- Premium checkout unlocks private prompt access
+- User, creator, and admin dashboards show role-specific features
+- Admin moderation actions work for pending prompts and reports
 
-## Assignment Submission
+## Notes For Evaluators
 
-| Requirement | Status |
-| --- | --- |
-| Client repository commits | 20+ meaningful commits |
-| Environment variables | `.env.example` included, `.env` ignored |
-| Responsive UI | Mobile, tablet, and desktop layouts |
-| Optional features | Theme toggle, AI testing client flow, prompt sharing, forking, PDF, markdown, infinite-style loading, Framer Motion |
+- This client is intentionally implemented with JavaScript and JSX.
+- The backend repository contains the Express API, MongoDB models, Better Auth setup, Stripe payment logic, upload handling, and seed data.
+- Render free services may sleep after inactivity; the frontend retries safe API reads to handle cold starts more gracefully.
+- The UI is responsive across mobile, tablet, and desktop views, including role dashboards and prompt detail pages.
 
 ---
 
 <div align="center">
 
-Built as the frontend workspace for PromptHive, a premium AI prompt marketplace.
+PromptHive Client - marketplace interface for a full-stack AI prompt platform.
 
 </div>
