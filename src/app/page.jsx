@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Boxes, ChevronLeft, ChevronRight, Copy, Crown, Gem, Layers3, Lock, Search, ShieldCheck, Sparkles, Star, TrendingUp, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { apiFetch } from "@/lib/api";
+import { absoluteUploadUrl, apiFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { benefitCards, extraSections, tools, trendingTags } from "@/lib/constants";
 import { PromptCard } from "@/components/PromptCard";
@@ -273,7 +273,7 @@ export default function HomePage() {
           })}
         </div>
         <div className="signal-board">
-          {["Google Auth ready", "MongoDB data live", "Stripe premium flow", "Admin moderation", "No TypeScript"].map((item) => (
+          {["Google sign-in", "Live marketplace data", "Premium checkout", "Admin moderation", "Creator dashboard"].map((item) => (
             <span key={item}>
               <Sparkles size={14} /> {item}
             </span>
@@ -444,7 +444,7 @@ export default function HomePage() {
         <div className="creator-grid">
           {creators.map((creator) => (
             <article className="creator-card" key={creator._id}>
-              <img src={creator.image || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80"} alt={creator.name} />
+              <img src={absoluteUploadUrl(creator.image) || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80"} alt={creator.name} />
               <h3>{creator.name}</h3>
               <p>{creator.prompts} prompts published</p>
               <strong>{creator.copies} copies</strong>
