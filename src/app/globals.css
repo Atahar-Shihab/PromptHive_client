@@ -7305,25 +7305,26 @@ th {
 
 .premium-coverflow {
   position: relative;
-  width: min(1440px, calc(100% - 28px));
-  min-height: 540px;
-  margin: 28px auto 0;
+  width: min(1320px, calc(100% - 28px));
+  min-height: 520px;
+  margin: 18px auto 0;
   perspective: 1400px;
 }
 
 .premium-coverflow::before {
   content: "";
   position: absolute;
-  inset: 58px clamp(18px, 8vw, 116px) 88px;
+  inset: 92px clamp(18px, 9vw, 120px) 98px;
+  z-index: 0;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 38px;
+  border-radius: 34px;
   background:
-    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--primary), transparent 66%), transparent 34%),
-    radial-gradient(circle at 84% 22%, color-mix(in srgb, var(--cyan), transparent 76%), transparent 34%),
-    linear-gradient(135deg, rgba(10, 10, 15, 0.9), rgba(21, 19, 31, 0.72));
+    radial-gradient(circle at 16% 34%, color-mix(in srgb, var(--primary), transparent 70%), transparent 30%),
+    radial-gradient(circle at 84% 36%, color-mix(in srgb, var(--cyan), transparent 78%), transparent 30%),
+    linear-gradient(135deg, rgba(25, 20, 29, 0.88), rgba(17, 25, 30, 0.76));
   box-shadow:
-    0 34px 110px rgba(36, 26, 88, 0.24),
-    0 0 80px color-mix(in srgb, var(--primary), transparent 86%) inset;
+    0 30px 80px rgba(0, 0, 0, 0.22),
+    0 0 74px color-mix(in srgb, var(--primary), transparent 88%) inset;
   backdrop-filter: blur(18px);
   pointer-events: none;
 }
@@ -7331,9 +7332,9 @@ th {
 .premium-coverflow::after {
   content: "Premium Vault";
   position: absolute;
-  top: 76px;
+  top: 98px;
   left: 50%;
-  z-index: 4;
+  z-index: 12;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
@@ -7353,19 +7354,20 @@ th {
 
 .premium-coverflow-stage {
   position: relative;
-  height: 430px;
+  z-index: 5;
+  height: 410px;
   overflow: hidden;
   transform-style: preserve-3d;
 }
 
 .coverflow-card {
   position: absolute;
-  top: 18px;
+  top: 34px;
   left: 50%;
   display: grid;
   grid-template-rows: 176px 1fr;
-  width: min(318px, 72vw);
-  height: 376px;
+  width: min(324px, 72vw);
+  height: 368px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--primary), transparent 82%);
   border-radius: 22px;
@@ -7376,6 +7378,12 @@ th {
     0 0 0 1px rgba(255, 255, 255, 0.72) inset;
   cursor: pointer;
   transform-origin: center center;
+  transition:
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 420ms ease,
+    filter 420ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
   will-change: transform, opacity, filter;
 }
 
@@ -7390,6 +7398,15 @@ th {
     0 0 36px color-mix(in srgb, var(--cyan), transparent 90%),
     0 0 0 1px rgba(255, 255, 255, 0.78) inset;
   cursor: default;
+  transform-origin: center center;
+}
+
+.coverflow-card:not(.active):hover {
+  border-color: color-mix(in srgb, var(--primary), transparent 62%);
+  box-shadow:
+    0 30px 74px rgba(42, 32, 102, 0.21),
+    0 0 34px color-mix(in srgb, var(--primary), transparent 86%),
+    0 0 0 1px rgba(255, 255, 255, 0.72) inset;
 }
 
 .coverflow-card.vault {
@@ -7723,7 +7740,7 @@ th {
 
 .coverflow-arrow {
   position: absolute;
-  top: 190px;
+  top: 236px;
   z-index: 60;
   display: grid;
   place-items: center;
@@ -7740,11 +7757,11 @@ th {
 }
 
 .coverflow-arrow.left {
-  left: 4px;
+  left: clamp(8px, 3vw, 32px);
 }
 
 .coverflow-arrow.right {
-  right: 4px;
+  right: clamp(8px, 3vw, 32px);
 }
 
 .coverflow-arrow:hover {
@@ -7759,7 +7776,7 @@ th {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .coverflow-dots button {
@@ -7783,7 +7800,7 @@ th {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .coverflow-actions .button {
@@ -7850,30 +7867,31 @@ th {
 
 @media (max-width: 980px) {
   .premium-coverflow {
-    min-height: 508px;
+    min-height: 500px;
   }
 
   .premium-coverflow::before {
-    inset: 52px 18px 84px;
+    inset: 86px 16px 94px;
     border-radius: 30px;
   }
 
   .premium-coverflow::after {
-    top: 68px;
+    top: 92px;
   }
 
   .premium-coverflow-stage {
-    height: 392px;
+    height: 396px;
   }
 
   .coverflow-card {
     grid-template-rows: 164px 1fr;
     width: min(304px, 74vw);
     height: 350px;
+    top: 34px;
   }
 
   .coverflow-arrow {
-    top: 170px;
+    top: 224px;
   }
 }
 
@@ -7884,16 +7902,16 @@ th {
 
   .premium-coverflow {
     width: calc(100% - 20px);
-    min-height: 536px;
+    min-height: 520px;
   }
 
   .premium-coverflow::before {
-    inset: 50px 0 116px;
+    inset: 76px 0 120px;
     border-radius: 24px;
   }
 
   .premium-coverflow::after {
-    top: 64px;
+    top: 82px;
     min-height: 26px;
     padding: 0 12px;
     font-size: 0.64rem;
@@ -7907,6 +7925,7 @@ th {
     grid-template-rows: 150px 1fr;
     width: min(286px, 78vw);
     height: 338px;
+    top: 24px;
   }
 
   .coverflow-card-body {
@@ -7925,7 +7944,7 @@ th {
 
   .coverflow-arrow {
     top: auto;
-    bottom: 78px;
+    bottom: 82px;
     width: 42px;
     height: 42px;
   }

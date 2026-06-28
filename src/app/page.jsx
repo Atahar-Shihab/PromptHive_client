@@ -53,17 +53,17 @@ function circularOffset(index, activeIndex, length) {
 function coverflowStyle(offset) {
   const distance = Math.abs(offset);
   const hidden = distance > 3;
-  const x = offset * 196;
-  const y = distance * 14;
-  const scale = Math.max(0.72, 1 - distance * 0.09);
-  const rotate = offset * -5;
-  const rotateY = offset * -12;
+  const x = offset * 246;
+  const y = distance * 16;
+  const scale = Math.max(0.68, 1 - distance * 0.08);
+  const rotate = offset * -4.6;
+  const rotateY = offset * -14;
 
   return {
-    zIndex: 80 - distance,
-    opacity: hidden ? 0 : 1 - distance * 0.15,
+    zIndex: 80 - distance * 4,
+    opacity: hidden ? 0 : 1 - distance * 0.1,
     pointerEvents: hidden ? "none" : "auto",
-    filter: distance ? `saturate(${1 - distance * 0.08}) brightness(${1 - distance * 0.06})` : "none",
+    filter: distance ? `saturate(${1 - distance * 0.05}) brightness(${1 - distance * 0.04})` : "none",
     transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${offset === 0 ? 1.04 : scale})`
   };
 }
@@ -336,8 +336,6 @@ export default function HomePage() {
                     role="button"
                     tabIndex={Math.abs(offset) > 3 ? -1 : 0}
                     style={coverflowStyle(offset)}
-                    transition={{ type: "spring", stiffness: 180, damping: 24 }}
-                    whileHover={isActive ? { y: -8 } : { y: -4 }}
                   >
                     {isVault && (
                       <div className="coverflow-vault-beam" aria-hidden="true">
