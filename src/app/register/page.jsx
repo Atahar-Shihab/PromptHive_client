@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { Crown, ImagePlus, PenTool, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Crown, ImagePlus, PenTool, Rocket, ShieldCheck, Sparkles, Star, UserRound } from "lucide-react";
 import { authClient, clearStoredAuthTokens, clientCallbackURL } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 import { roleHomePath } from "@/lib/role-home";
@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const { data: session, isPending } = authClient.useSession();
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
+  const [accountRole, setAccountRole] = useState("user");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function RegisterPage() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name")).trim();
+    const requestedRole = form.get("role") === "creator" ? "creator" : "user";
     try {
       setSubmitting(true);
       clearStoredAuthTokens();
@@ -66,6 +68,7 @@ export default function RegisterPage() {
       });
       if (result?.error) return toast.error(result.error.message ?? "Registration failed");
 
+      let uploadedImage = "";
       if (photoFile) {
         try {
           const uploadData = new FormData();
@@ -74,18 +77,23 @@ export default function RegisterPage() {
             method: "POST",
             body: uploadData
           });
-
-          await apiFetch("/api/users/me", {
-            method: "PATCH",
-            body: JSON.stringify({ name, image: uploaded.url })
-          });
+          uploadedImage = uploaded.url;
         } catch {
           toast.warn("Account created, but photo upload failed. You can upload it later from Profile.");
         }
       }
 
-      toast.success("Account created");
-      router.push("/dashboard");
+      await apiFetch("/api/users/me", {
+        method: "PATCH",
+        body: JSON.stringify({
+          name,
+          role: requestedRole,
+          ...(uploadedImage ? { image: uploadedImage } : {})
+        })
+      });
+
+      toast.success(requestedRole === "creator" ? "Creator workspace created" : "User workspace created");
+      router.push(roleHomePath(requestedRole));
     } catch (error) {
       toast.error(error?.message ?? "Registration failed");
     } finally {
@@ -135,6 +143,42 @@ export default function RegisterPage() {
         <p className="eyebrow">Register</p>
         <h1>Create your prompt creator account</h1>
         <p className="auth-subcopy">Create a free account to explore the marketplace, save prompts, and publish up to three public prompts.</p>
+        <div className="auth-role-chooser" role="radiogroup" aria-label="Choose account type">
+          {[
+            {
+              value: "user",
+              title: "Join as User",
+              text: "Browse, bookmark, review, and unlock premium prompts.",
+              icon: UserRound
+            },
+            {
+              value: "creator",
+              title: "Join as Creator",
+              text: "Publish prompt workflows and track creator activity.",
+              icon: Rocket
+            }
+          ].map((option) => {
+            const Icon = option.icon;
+            return (
+              <label className={`auth-role-card${accountRole === option.value ? " selected" : ""}`} key={option.value}>
+                <input
+                  checked={accountRole === option.value}
+                  name="role"
+                  type="radio"
+                  value={option.value}
+                  onChange={() => setAccountRole(option.value)}
+                />
+                <span className="auth-role-icon">
+                  <Icon size={18} />
+                </span>
+                <span>
+                  <strong>{option.title}</strong>
+                  <small>{option.text}</small>
+                </span>
+              </label>
+            );
+          })}
+        </div>
         <label>
           Name
           <input name="name" required placeholder="Your name" />

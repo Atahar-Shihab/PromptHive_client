@@ -373,9 +373,21 @@ export default function HomePage() {
                         ))}
                       </div>
                       <div className="coverflow-card-bottom">
-                        <strong>{prompt.copyCount ?? 0} copies</strong>
-                        <Link href={`/prompts/${prompt._id}`} className="coverflow-detail-button" onClick={(event) => event.stopPropagation()}>
-                          Details <ArrowRight size={15} />
+                        <div className="coverflow-metrics">
+                          <span>
+                            <Copy size={14} /> {prompt.copyCount ?? 0} copies
+                          </span>
+                          <span>
+                            <Star size={14} /> {Number(prompt.avgRating ?? 0).toFixed(1)}
+                          </span>
+                        </div>
+                        <Link
+                          href={`/prompts/${prompt._id}`}
+                          className="coverflow-detail-button"
+                          aria-label={`View prompt ${prompt.title}`}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          View Prompt <ArrowRight size={15} />
                         </Link>
                       </div>
                     </div>

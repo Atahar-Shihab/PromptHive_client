@@ -498,7 +498,7 @@ export default function PromptDetailsPage() {
           </button>
         </div>
 
-        <div className="payment-panel" style={{ marginTop: 18 }}>
+        <div className="payment-panel qa-panel">
           <h2>
             <Sparkles size={20} /> Prompt Quality Scan
           </h2>
