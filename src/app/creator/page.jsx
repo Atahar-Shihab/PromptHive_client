@@ -60,6 +60,7 @@ export default function CreatorDashboardPage() {
   const promptRows = prompts.slice(0, 8).map((prompt) => ({
     id: prompt._id,
     title: prompt.title,
+    href: `/prompts/${prompt._id}`,
     category: prompt.category,
     tool: prompt.aiTool,
     visibility: prompt.visibility,
@@ -128,7 +129,15 @@ export default function CreatorDashboardPage() {
         emptyTitle="No creator prompts yet"
         emptyText="Publish prompts to start tracking growth and copies."
         columns={[
-          { key: "title", label: "Prompt" },
+          {
+            key: "title",
+            label: "Prompt",
+            render: (row) => (
+              <Link className="dashboard-table-link" href={row.href}>
+                {row.title}
+              </Link>
+            )
+          },
           { key: "tool", label: "Tool" },
           { key: "visibility", label: "Visibility", render: (row) => <StatusPill value={row.visibility} /> },
           { key: "status", label: "Status", render: (row) => <StatusPill value={row.status} /> },

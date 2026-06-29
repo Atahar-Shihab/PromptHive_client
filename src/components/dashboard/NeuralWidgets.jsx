@@ -186,11 +186,22 @@ export function GlassTable({ title, columns, rows, emptyTitle = "No data yet", e
                     ))}
                     <td className="border-b border-white/[0.045] px-5 py-4">
                       <div className="flex justify-end gap-2">
-                        {[Eye, Pencil, Trash2].map((Icon, actionIndex) => (
-                          <button key={actionIndex} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:text-white">
-                            <Icon size={15} />
+                        {row.href && (
+                          <Link href={row.href} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-cyan-300/40 hover:text-white" title="View details">
+                            <Eye size={15} />
+                          </Link>
+                        )}
+                        {row.editHref && (
+                          <Link href={row.editHref} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-violet-300/40 hover:text-white" title="Edit">
+                            <Pencil size={15} />
+                          </Link>
+                        )}
+                        {row.onDelete && (
+                          <button type="button" onClick={row.onDelete} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-red-300/40 hover:text-white" title="Delete">
+                            <Trash2 size={15} />
                           </button>
-                        ))}
+                        )}
+                        {!row.href && !row.editHref && !row.onDelete && <span className="text-sm text-white/30">-</span>}
                       </div>
                     </td>
                   </tr>

@@ -5,8 +5,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { ArrowRight, BookmarkCheck, Crown, FileText, GitPullRequestArrow, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BellRing, BookmarkCheck, CheckCircle2, Clock3, Crown, Eye, FileText, Flag, GitPullRequestArrow, ShieldAlert, Sparkles, Star, XCircle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import { formatDate } from "@/lib/format";
 import { roleHomePath } from "@/lib/role-home";
 import { Spinner } from "@/components/Spinner";
 import { EmptyState, GlassTable, StatusPill, fadeUp, pageStagger } from "@/components/dashboard/NeuralWidgets";
@@ -30,12 +31,119 @@ function MiniStat({ icon: Icon, label, value, helper }) {
   );
 }
 
+function statusMessage(prompt) {
+  if (prompt.status === "approved") return "Approved and visible in the marketplace.";
+  if (prompt.status === "rejected") return prompt.rejectionFeedback || "Rejected by admin. Update and resubmit when ready.";
+  return "Waiting for admin approval.";
+}
+
+function StatusFeed({ notifications, prompts }) {
+  const fallbackItems = prompts
+    .slice(0, 5)
+    .map((prompt) => ({
+      _id: prompt._id,
+      title: prompt.status === "approved" ? "Prompt approved" : prompt.status === "rejected" ? "Prompt needs revision" : "Prompt in review",
+      message: `${prompt.title}: ${statusMessage(prompt)}`,
+      type: prompt.status,
+      createdAt: prompt.updatedAt || prompt.createdAt,
+      href: `/prompts/${prompt._id}`
+    }));
+  const feedItems = [
+    ...notifications.map((item) => ({ ...item, href: item.type === "prompt" ? "/dashboard/my-prompts" : item.type === "report" ? "/dashboard/my-prompts" : "/dashboard" })),
+    ...fallbackItems
+  ].slice(0, 6);
+
+  const iconMap = {
+    approved: CheckCircle2,
+    rejected: XCircle,
+    pending: Clock3,
+    prompt: FileText,
+    report: ShieldAlert,
+    payment: Crown,
+    system: BellRing
+  };
+
+  return (
+    <motion.article variants={fadeUp} className="dashboard-status-feed">
+      <div className="dashboard-section-head">
+        <div>
+          <p className="dashboard-kicker">Status signals</p>
+          <h3>Approval, report, and warning updates</h3>
+        </div>
+        <BellRing size={19} />
+      </div>
+      {!feedItems.length ? (
+        <EmptyState title="No updates yet" text="Approvals, report notices, and admin warnings will appear here." />
+      ) : (
+        <div className="dashboard-feed-list">
+          {feedItems.map((item, index) => {
+            const Icon = iconMap[item.type] ?? Flag;
+            return (
+              <Link href={item.href} key={item._id ?? `${item.title}-${index}`} className={`dashboard-feed-item dashboard-feed-item--${item.type}`}>
+                <span className="dashboard-feed-icon">
+                  <Icon size={17} />
+                </span>
+                <span>
+                  <strong>{item.title}</strong>
+                  <small>{item.message}</small>
+                  <em>{formatDate(item.createdAt)}</em>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </motion.article>
+  );
+}
+
+function SavedPromptCards({ bookmarks }) {
+  const items = bookmarks.slice(0, 4).map(sourcePrompt).filter(Boolean);
+  return (
+    <motion.article variants={fadeUp} className="dashboard-saved-panel">
+      <div className="dashboard-section-head">
+        <div>
+          <p className="dashboard-kicker">Saved library</p>
+          <h3>Bookmarked prompts you can return to</h3>
+        </div>
+        <Link href="/dashboard/saved-prompts" className="dashboard-mini-link">
+          View all <ArrowRight size={15} />
+        </Link>
+      </div>
+      {!items.length ? (
+        <EmptyState title="No bookmarks yet" text="Bookmark prompts from the marketplace and they will appear in your dashboard." actionHref="/prompts" actionLabel="Explore Prompts" />
+      ) : (
+        <div className="dashboard-saved-grid">
+          {items.map((prompt) => (
+            <article key={prompt._id} className="dashboard-saved-card">
+              <div>
+                <span className="dashboard-saved-chip">{prompt.visibility === "private" ? "Premium vault" : "Public prompt"}</span>
+                <h4>{prompt.title}</h4>
+                <p>{prompt.description}</p>
+              </div>
+              <div className="dashboard-saved-meta">
+                <span>{prompt.aiTool}</span>
+                <span>{prompt.category}</span>
+                <span>{prompt.copyCount ?? 0} copies</span>
+              </div>
+              <Link href={`/prompts/${prompt._id}`} className="dashboard-view-button">
+                <Eye size={15} /> View Details
+              </Link>
+            </article>
+          ))}
+        </div>
+      )}
+    </motion.article>
+  );
+}
+
 export default function DashboardHome() {
   const router = useRouter();
   const [profile, setProfile] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [prompts, setPrompts] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -49,16 +157,18 @@ export default function DashboardHome() {
           return;
         }
 
-        const [saved, mine, myReviews] = await Promise.all([
+        const [saved, mine, myReviews, alerts] = await Promise.all([
           apiFetch("/api/bookmarks"),
           apiFetch("/api/prompts/mine/list?limit=50"),
-          apiFetch("/api/reviews/me")
+          apiFetch("/api/reviews/me"),
+          apiFetch("/api/notifications")
         ]);
         if (!alive) return;
         setProfile(user);
         setBookmarks(saved ?? []);
         setPrompts(mine.data ?? []);
         setReviews(myReviews ?? []);
+        setNotifications(alerts ?? []);
       } catch (requestError) {
         if (!alive) return;
         const message = requestError?.message ?? "Could not load dashboard.";
@@ -88,21 +198,12 @@ export default function DashboardHome() {
   const promptRows = prompts.slice(0, 5).map((prompt) => ({
     id: prompt._id,
     title: prompt.title,
+    href: `/prompts/${prompt._id}`,
     tool: prompt.aiTool,
     status: prompt.status,
     visibility: prompt.visibility,
     copies: prompt.copyCount ?? 0
   }));
-  const savedRows = bookmarks.slice(0, 5).map((item) => {
-    const prompt = sourcePrompt(item);
-    return {
-      id: prompt._id,
-      title: prompt.title ?? "Saved prompt",
-      tool: prompt.aiTool ?? "AI",
-      status: prompt.visibility ?? "public",
-      copies: prompt.copyCount ?? 0
-    };
-  });
 
   return (
     <motion.section variants={pageStagger} initial="hidden" animate="visible" className="dashboard-simple grid gap-5">
@@ -142,32 +243,31 @@ export default function DashboardHome() {
         <MiniStat icon={GitPullRequestArrow} label="Pending" value={summary.pending} helper={`${summary.approved} approved`} />
       </motion.div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
         <GlassTable
           title="My Prompts"
           rows={promptRows}
           emptyTitle="No prompts published yet"
           emptyText="Create your first prompt and send it for admin review."
           columns={[
-            { key: "title", label: "Prompt" },
+            {
+              key: "title",
+              label: "Prompt",
+              render: (row) => (
+                <Link className="dashboard-table-link" href={row.href}>
+                  {row.title}
+                </Link>
+              )
+            },
             { key: "tool", label: "Tool" },
             { key: "status", label: "Status", render: (row) => <StatusPill value={row.status} /> },
             { key: "copies", label: "Copies" }
           ]}
         />
-        <GlassTable
-          title="Saved Prompts"
-          rows={savedRows}
-          emptyTitle="Saved library is empty"
-          emptyText="Bookmark prompts from the marketplace to build your library."
-          columns={[
-            { key: "title", label: "Prompt" },
-            { key: "tool", label: "Tool" },
-            { key: "status", label: "Visibility", render: (row) => <StatusPill value={row.status} /> },
-            { key: "copies", label: "Copies" }
-          ]}
-        />
+        <StatusFeed notifications={notifications} prompts={prompts} />
       </div>
+
+      <SavedPromptCards bookmarks={bookmarks} />
 
       <motion.article variants={fadeUp} className="dashboard-next-panel">
         <Sparkles size={18} />
