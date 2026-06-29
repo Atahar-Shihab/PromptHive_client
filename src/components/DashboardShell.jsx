@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   BarChart3,
@@ -20,7 +20,8 @@ import {
   Sparkles,
   Star,
   User,
-  Users
+  Users,
+  X
 } from "lucide-react";
 import { authClient, clearStoredAuthTokens } from "@/lib/auth-client";
 import { absoluteUploadUrl } from "@/lib/api";
@@ -130,7 +131,7 @@ function isActive(pathname, href) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function SidebarNav({ groups, pathname, collapsed, mode }) {
+function SidebarNav({ groups, pathname, collapsed, mode, onNavigate }) {
   return (
     <nav className="dashboard-sidebar-nav">
       {groups.map((group) => (
@@ -146,6 +147,7 @@ function SidebarNav({ groups, pathname, collapsed, mode }) {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   title={collapsed ? item.label : undefined}
                   className={cn(
@@ -198,6 +200,7 @@ function MobileTabs({ groups, pathname, mode }) {
 export function DashboardShell({ user, mode, children }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const accountRole = normalizeRole(user.role);
   const requestedMode = normalizeRole(mode);
   const shellMode = pathname === "/dashboard/profile" ? accountRole : requestedMode;
@@ -212,6 +215,10 @@ export function DashboardShell({ user, mode, children }) {
     creator: "Publish premium-ready workflows and track creator analytics.",
     admin: "Review pending prompts, users, payments, reports, and analytics."
   };
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   async function signOut() {
     clearStoredAuthTokens();
@@ -275,10 +282,83 @@ export function DashboardShell({ user, mode, children }) {
         </div>
       </aside>
 
+      {mobileMenuOpen && (
+        <div className="dashboard-mobile-drawer md:hidden">
+          <button
+            type="button"
+            className="dashboard-mobile-backdrop"
+            aria-label="Close dashboard menu"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <motion.aside
+            className="dashboard-mobile-panel"
+            initial={{ x: "-105%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 330, damping: 34 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Dashboard navigation"
+          >
+            <div className="dashboard-sidebar-head">
+              <div className="dashboard-sidebar-brand">
+                <Link href="/" className="dashboard-sidebar-logo" title="Back to PromptHive home" onClick={() => setMobileMenuOpen(false)}>
+                  <BrandMark />
+                </Link>
+                <div className="min-w-0">
+                  <strong>PromptHive</strong>
+                  <span>{meta.label} Workspace</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="dashboard-sidebar-collapse"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close dashboard menu"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="dashboard-sidebar-status-card">
+              <span className={`bg-gradient-to-r ${meta.tone}`}>{meta.label} Menu</span>
+              <p>{roleCopy[shellMode] ?? roleCopy.user}</p>
+            </div>
+
+            <SidebarNav
+              groups={groups}
+              pathname={pathname}
+              collapsed={false}
+              mode={`${shellMode}-mobile`}
+              onNavigate={() => setMobileMenuOpen(false)}
+            />
+
+            <div className="mt-auto grid gap-3">
+              <div className="dashboard-sidebar-profile">
+                <div className="flex items-center gap-3">
+                  <Avatar user={user} className="h-10 w-10" />
+                  <div className="min-w-0 flex-1">
+                    <strong className="block truncate text-sm text-white/90">{user.name}</strong>
+                    <span className={`stamp-badge stamp-badge--${accountRole} mt-1`}>
+                      {accountMeta.label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.aside>
+        </div>
+      )}
+
       <div className={cn("relative z-10 min-h-screen transition-all duration-300 md:pl-[104px]", !collapsed && "md:pl-[272px]")}>
         <header className="dashboard-shell-topbar sticky top-0 z-30 border-b border-white/[0.06] bg-[#0D0B14]/72 px-4 py-3 backdrop-blur-xl md:px-8">
           <div className="mx-auto flex max-w-[1480px] items-center gap-3">
-            <button className="grid h-10 w-10 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/70 md:hidden">
+            <button
+              type="button"
+              className="dashboard-mobile-menu-button grid h-10 w-10 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/70 md:hidden"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open dashboard menu"
+              aria-expanded={mobileMenuOpen}
+            >
               <Menu size={18} />
             </button>
             <div className="min-w-0 flex-1">

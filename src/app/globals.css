@@ -11975,3 +11975,245 @@ body::before {
     min-height: 42px;
   }
 }
+
+/* Mobile dashboard drawer and homepage coverflow refinements. */
+.dashboard-mobile-menu-button {
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.dashboard-mobile-menu-button::after {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background: conic-gradient(from 140deg, transparent, color-mix(in srgb, var(--primary), transparent 45%), color-mix(in srgb, var(--cyan), transparent 46%), transparent);
+  opacity: 0;
+  transition: opacity 180ms ease, transform 280ms ease;
+}
+
+.dashboard-mobile-menu-button:hover::after,
+.dashboard-mobile-menu-button:focus-visible::after {
+  opacity: 0.48;
+  transform: rotate(34deg);
+}
+
+.dashboard-mobile-menu-button svg {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+}
+
+.dashboard-mobile-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background:
+    radial-gradient(circle at 18% 8%, color-mix(in srgb, var(--primary), transparent 74%), transparent 34%),
+    rgba(3, 5, 13, 0.66);
+  backdrop-filter: blur(12px);
+}
+
+.dashboard-mobile-panel {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 1;
+  display: flex;
+  width: min(322px, calc(100vw - 24px));
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 14px;
+  color: #f8fafc;
+  background:
+    radial-gradient(circle at 14% 0%, color-mix(in srgb, var(--primary), transparent 76%), transparent 34%),
+    radial-gradient(circle at 90% 14%, color-mix(in srgb, var(--cyan), transparent 86%), transparent 30%),
+    linear-gradient(180deg, rgba(21, 19, 31, 0.96), rgba(8, 9, 18, 0.96));
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-mobile-panel .dashboard-sidebar-nav {
+  margin-top: 0;
+}
+
+.dashboard-mobile-panel .dashboard-sidebar-section {
+  gap: 8px;
+}
+
+.dashboard-mobile-panel .dashboard-sidebar-link {
+  min-height: 48px;
+  border-radius: 18px;
+}
+
+.dashboard-mobile-panel .dashboard-sidebar-profile {
+  margin-top: 8px;
+}
+
+[data-theme="light"] .dashboard-mobile-backdrop {
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--primary), transparent 78%), transparent 34%),
+    rgba(15, 23, 42, 0.32);
+}
+
+[data-theme="light"] .dashboard-mobile-panel {
+  color: #07111f;
+  border-color: rgba(15, 23, 42, 0.08);
+  background:
+    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--gold), transparent 86%), transparent 32%),
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--cyan), transparent 88%), transparent 32%),
+    rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 32px 84px rgba(15, 23, 42, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+[data-theme="light"] .dashboard-mobile-panel .dashboard-sidebar-brand strong,
+[data-theme="light"] .dashboard-mobile-panel .dashboard-sidebar-profile strong {
+  color: #07111f !important;
+}
+
+[data-theme="light"] .dashboard-mobile-panel .dashboard-sidebar-brand span,
+[data-theme="light"] .dashboard-mobile-panel .dashboard-sidebar-status-card p {
+  color: #475569 !important;
+}
+
+@media (max-width: 760px) {
+  .premium-swiper-section {
+    padding-top: 58px;
+    padding-bottom: 82px;
+  }
+
+  .premium-coverflow {
+    width: calc(100% - 22px);
+    min-height: 610px;
+    margin-top: 10px;
+  }
+
+  .premium-coverflow::before {
+    inset: 88px 0 134px;
+    border-radius: 26px;
+  }
+
+  .premium-coverflow::after {
+    top: 90px;
+  }
+
+  .premium-coverflow-stage {
+    height: 444px;
+    overflow: hidden;
+  }
+
+  .coverflow-card {
+    grid-template-rows: 150px minmax(0, 1fr);
+    width: min(286px, 78vw);
+    height: 388px;
+    top: 24px;
+  }
+
+  .coverflow-card.active {
+    top: 8px;
+    width: min(318px, 88vw);
+    height: 424px;
+    grid-template-rows: 158px minmax(0, 1fr);
+  }
+
+  .coverflow-card-body,
+  .coverflow-card.active .coverflow-card-body {
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .coverflow-vault-strip {
+    min-height: 32px;
+  }
+
+  .coverflow-card-body h3 {
+    font-size: 1.02rem;
+    line-height: 1.18;
+    -webkit-line-clamp: 2;
+  }
+
+  .coverflow-card-body .coverflow-description {
+    min-height: 0;
+    margin-top: 2px;
+    font-size: 0.74rem;
+    line-height: 1.38;
+    -webkit-line-clamp: 2;
+  }
+
+  .coverflow-tags {
+    max-height: 27px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .coverflow-card-bottom {
+    gap: 8px;
+  }
+
+  .coverflow-detail-button {
+    min-height: 42px;
+    font-size: 0.82rem;
+  }
+
+  .coverflow-arrow {
+    top: 230px;
+    bottom: auto;
+    width: 42px;
+    height: 42px;
+    z-index: 70;
+  }
+
+  .coverflow-arrow.left {
+    left: 8px;
+  }
+
+  .coverflow-arrow.right {
+    right: 8px;
+  }
+
+  .coverflow-actions {
+    display: grid;
+    width: min(100%, 360px);
+    gap: 10px;
+    margin: 16px auto 0;
+  }
+
+  .coverflow-actions .button {
+    width: 100%;
+    min-height: 52px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 390px) {
+  .premium-coverflow {
+    min-height: 600px;
+  }
+
+  .premium-coverflow-stage {
+    height: 434px;
+  }
+
+  .coverflow-card.active {
+    width: min(300px, 88vw);
+    height: 414px;
+  }
+
+  .coverflow-arrow {
+    top: 222px;
+  }
+}

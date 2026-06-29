@@ -387,7 +387,7 @@ export default function HomePage() {
                           aria-label={`View prompt ${prompt.title}`}
                           onClick={(event) => event.stopPropagation()}
                         >
-                          View Prompt <ArrowRight size={15} />
+                          View Details <ArrowRight size={15} />
                         </Link>
                       </div>
                     </div>
