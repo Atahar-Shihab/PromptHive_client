@@ -17,6 +17,16 @@ const nextConfig = {
   experimental: {
     devtoolSegmentExplorer: false
   },
+  async rewrites() {
+    if (!serverUrl) return [];
+
+    return [
+      {
+        source: "/api/auth/:path*",
+        destination: `${serverUrl}/api/auth/:path*`
+      }
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

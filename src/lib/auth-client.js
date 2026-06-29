@@ -4,6 +4,8 @@ import { createAuthClient } from "better-auth/react";
 import { jwtClient } from "better-auth/client/plugins";
 import { API_URL } from "./constants";
 
+const AUTH_URL = process.env.NEXT_PUBLIC_AUTH_URL ?? (typeof window !== "undefined" ? window.location.origin : API_URL);
+
 export function clearStoredAuthTokens() {
   if (typeof window === "undefined") return;
   localStorage.removeItem("bearer_token");
@@ -11,7 +13,7 @@ export function clearStoredAuthTokens() {
 }
 
 export const authClient = createAuthClient({
-  baseURL: API_URL,
+  baseURL: AUTH_URL,
   plugins: [jwtClient()],
   fetchOptions: {
     credentials: "include",
