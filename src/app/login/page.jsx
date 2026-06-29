@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { Bookmark, Crown, LayoutDashboard, ShieldCheck, Sparkles } from "lucide-react";
 import { authClient, clearStoredAuthTokens, clientCallbackURL } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
-import { API_URL } from "@/lib/constants";
 import { roleHomePath } from "@/lib/role-home";
 
 function safeLocalRedirect(path) {
@@ -33,7 +32,7 @@ function roleAwareRedirect(path, role) {
 
 async function waitForSession() {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const response = await fetch(`${API_URL}/api/auth/get-session`, {
+    const response = await fetch("/api/auth/get-session", {
       credentials: "include",
       cache: "no-store"
     });

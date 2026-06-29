@@ -155,8 +155,10 @@ canvas {
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 80;
   display: flex;
   align-items: center;
@@ -168,6 +170,10 @@ canvas {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+}
+
+.site-header + main {
+  padding-top: 64px;
 }
 
 .brand {
@@ -2135,7 +2141,9 @@ label {
 }
 
 .dashboard-topbar {
-  position: relative;
+  position: sticky;
+  top: 14px;
+  z-index: 35;
   overflow: hidden;
   display: flex;
   align-items: center;

@@ -1,6 +1,6 @@
 import { Bot, BrainCircuit, Images, MessageSquareText, PenTool, Workflow } from "lucide-react";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000").replace(/\/$/, "");
 
 export const categories = ["Marketing", "Research", "Design", "Operations", "Automation", "Writing"];
 export const tools = ["ChatGPT", "Gemini", "Claude", "Midjourney", "DALL-E", "Copilot"];

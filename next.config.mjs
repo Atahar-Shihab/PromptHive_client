@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const serverUrl = process.env.NEXT_PUBLIC_API_URL || "";
+const serverUrl = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
 let serverHostname = "";
 
 try {
@@ -22,8 +22,8 @@ const nextConfig = {
 
     return [
       {
-        source: "/api/auth/:path*",
-        destination: `${serverUrl}/api/auth/:path*`
+        source: "/api/:path*",
+        destination: `${serverUrl}/api/:path*`
       }
     ];
   },

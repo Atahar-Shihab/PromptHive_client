@@ -3,9 +3,21 @@
 import { API_URL } from "./constants";
 
 const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const API_REQUEST_URL = process.env.NEXT_PUBLIC_REQUEST_API_URL ?? "";
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function requestUrl(path) {
+  const base = API_REQUEST_URL || (typeof window === "undefined" ? API_URL : "");
+  return `${base}${path}`;
+}
+
+function apiLocationLabel() {
+  if (API_REQUEST_URL) return API_REQUEST_URL;
+  if (typeof window !== "undefined") return window.location.origin;
+  return API_URL;
 }
 
 export async function apiFetch(path, options = {}) {
@@ -27,7 +39,7 @@ export async function apiFetch(path, options = {}) {
     return headers;
   };
 
-  const request = async (headers) => fetch(`${API_URL}${path}`, {
+  const request = async (headers) => fetch(requestUrl(path), {
     ...options,
     headers,
     credentials: "include"
@@ -57,7 +69,7 @@ export async function apiFetch(path, options = {}) {
   try {
     response = await requestWithRetry(headers);
   } catch {
-    throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${API_URL}. Please wait a moment and refresh.`);
+    throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${apiLocationLabel()}. Please wait a moment and refresh.`);
   }
 
   if ((response.status === 401 || response.status === 403) && usedStoredBearer) {
@@ -66,7 +78,7 @@ export async function apiFetch(path, options = {}) {
     try {
       response = await requestWithRetry(buildHeaders(false));
     } catch {
-      throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${API_URL}. Please wait a moment and refresh.`);
+      throw new Error(`The PromptHive API is waking up or temporarily unavailable at ${apiLocationLabel()}. Please wait a moment and refresh.`);
     }
   }
 
