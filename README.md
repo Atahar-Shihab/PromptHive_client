@@ -41,6 +41,20 @@ The UI is designed around a polished marketplace identity with glass cards, prom
 | Client Repository | https://github.com/Atahar-Shihab/PromptHive_client |
 | Server Repository | https://github.com/Atahar-Shihab/PromptHive_Server |
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/landing.png" alt="PromptHive landing page with marketplace hero and premium vault preview" width="100%" />
+</p>
+
+| Marketplace Discovery | Authentication |
+| --- | --- |
+| <img src="docs/screenshots/marketplace.png" alt="PromptHive marketplace filters and prompt cards" width="100%" /> | <img src="docs/screenshots/auth.png" alt="PromptHive login page with Google authentication" width="100%" /> |
+
+<p align="center">
+  <img src="docs/screenshots/mobile-home.png" alt="PromptHive responsive mobile landing page" width="320" />
+</p>
+
 ## Core Features
 
 | Area | Included |
