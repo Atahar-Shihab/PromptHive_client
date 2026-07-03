@@ -27,6 +27,7 @@ import { authClient, clearStoredAuthTokens } from "@/lib/auth-client";
 import { absoluteUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/format";
 import { BrandMark } from "./BrandMark";
+import { NotificationBell } from "./NotificationBell";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navConfig = {
@@ -375,6 +376,7 @@ export function DashboardShell({ user, mode, children }) {
             <Link href="/prompts" className="dashboard-toplink hidden min-h-10 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm font-bold text-white/70 transition hover:text-white lg:inline-flex">
               <Sparkles size={16} /> Marketplace
             </Link>
+            <NotificationBell />
             <ThemeToggle />
             <div className="dashboard-user-pill hidden items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-1.5 pr-3 md:flex">
               <Avatar user={user} className="h-8 w-8" />
