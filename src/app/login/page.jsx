@@ -45,34 +45,24 @@ async function waitForSession() {
 
 const demoAccounts = [
   {
-    role: "Admin",
-    email: "admin@demo.com",
-    password: "admin1234",
-    icon: ShieldCheck,
-    badgeColor: "rgba(217, 118, 63, 0.2)",
-    textColor: "#D9763F",
-    desc: "Full governance, prompt approvals, reports, user roles & analytics.",
-    action: "1-Click Admin Access"
-  },
-  {
     role: "Creator",
     email: "creator@demo.com",
     password: "creator1234",
     icon: Sparkles,
-    badgeColor: "rgba(92, 138, 118, 0.2)",
-    textColor: "#5C8A76",
-    desc: "Publish prompts, live AI testing sandbox & creator analytics.",
-    action: "1-Click Creator Access"
+    badgeColor: "rgba(139, 92, 246, 0.18)",
+    textColor: "#a78bfa",
+    desc: "Test prompt publishing, AI tester & creator analytics.",
+    badge: "Studio"
   },
   {
     role: "Premium Buyer",
     email: "user@demo.com",
     password: "user1234",
     icon: Crown,
-    badgeColor: "rgba(214, 179, 112, 0.2)",
-    textColor: "#D6B370",
-    desc: "Unlocked private prompt vault, reviews, bookmarks & PDF export.",
-    action: "1-Click Buyer Access"
+    badgeColor: "rgba(245, 158, 11, 0.18)",
+    textColor: "#fde68a",
+    desc: "Test private prompt vault, reviews, bookmarks & PDFs.",
+    badge: "Pro Member"
   }
 ];
 
@@ -193,19 +183,18 @@ export default function LoginPage() {
         <div className="demo-access-panel">
           <div className="demo-access-header">
             <div className="demo-access-title">
-              <Zap size={16} style={{ color: "var(--primary)" }} />
-              <span>Instant Demo Credentials</span>
+              <Zap size={15} style={{ color: "var(--cyan)" }} />
+              <span>1-Click Demo Accounts</span>
             </div>
-            <span className="demo-access-badge">1-Click Login</span>
+            <span className="demo-access-badge">Instant Access</span>
           </div>
           <p className="demo-access-subcopy">
-            Evaluating PromptHive? Click any seeded role below to test the platform instantly:
+            Evaluating PromptHive? Click a role below to explore the platform without typing credentials:
           </p>
-          <div className="demo-roles-grid">
+          <div className="demo-roles-grid demo-roles-grid--two">
             {demoAccounts.map((account) => {
               const Icon = account.icon;
               const isSigningIn = submitting && activeDemoRole === account.role;
-              const isCopied = copiedRole === account.role;
               return (
                 <button
                   key={account.role}
@@ -216,20 +205,20 @@ export default function LoginPage() {
                 >
                   <div className="demo-role-top">
                     <span className="demo-role-tag">
-                      <Icon size={16} style={{ color: account.textColor }} />
+                      <Icon size={15} style={{ color: account.textColor }} />
                       <span>{account.role}</span>
                     </span>
                     <span
                       className="demo-role-badge"
                       style={{ background: account.badgeColor, color: account.textColor }}
                     >
-                      {account.role === "Admin" ? "Full Access" : account.role === "Creator" ? "Studio" : "Unlocked Vault"}
+                      {account.badge}
                     </span>
                   </div>
                   <span className="demo-role-desc">{account.desc}</span>
                   <div className="demo-role-footer">
                     <span className="demo-role-creds">
-                      {account.email} • {account.password}
+                      {account.email}
                     </span>
                     <span className="demo-role-action">
                       {isSigningIn ? "Signing in..." : (
