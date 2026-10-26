@@ -66,9 +66,12 @@ export function Header() {
         <span>PromptHive</span>
       </Link>
 
-      <button className="icon-button menu-toggle" onClick={() => setOpen((value) => !value)} aria-label="Open menu">
-        {open ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      <div className="header-controls">
+        <ThemeToggle />
+        <button className="icon-button menu-toggle" onClick={() => setOpen((value) => !value)} aria-label="Open menu">
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
 
       <nav className={open ? "nav-links open" : "nav-links"}>
         {links.map((link) => (
@@ -96,7 +99,6 @@ export function Header() {
             </Link>
           </>
         )}
-        <ThemeToggle />
       </nav>
     </header>
   );

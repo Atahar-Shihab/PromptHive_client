@@ -149,17 +149,24 @@ export default function HomePage() {
               ChatGPT, Gemini, Claude, Midjourney, and more.
             </p>
             <form className="search-panel" onSubmit={submit}>
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by title, tag, or AI tool" />
-              <button className="button" type="submit">
-                <Search size={18} /> Search
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by title, tag, or AI tool..." />
+              <button className="button" type="submit" aria-label="Search prompts">
+                <Search size={16} /> <span>Search</span>
               </button>
             </form>
             <div className="hero-tags">
               {trendingTags.map((tag) => (
-                <span key={tag}>#{tag}</span>
+                <button
+                  type="button"
+                  key={tag}
+                  className="tag-chip-btn"
+                  onClick={() => router.push(`/prompts?search=${encodeURIComponent(tag)}`)}
+                >
+                  #{tag}
+                </button>
               ))}
             </div>
-            <div className="action-row" style={{ marginTop: 26 }}>
+            <div className="action-row">
               <Link href="/prompts" className="button">
                 Explore Prompts <ArrowRight size={18} />
               </Link>
