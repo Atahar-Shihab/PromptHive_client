@@ -181,13 +181,15 @@ canvas {
 .site-header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 22px;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
 }
 
 .site-header + main {
@@ -483,7 +485,8 @@ canvas {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
-  max-width: 760px;
+  width: 100%;
+  max-width: 100%;
   margin: 28px 0 18px;
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -522,11 +525,17 @@ canvas {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.tag-row,
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 24px;
 }
 
 .tag-row span,
@@ -577,8 +586,15 @@ canvas {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  max-width: 920px;
-  margin-top: 34px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0;
+}
+
+@media (max-width: 1180px) {
+  .hero-signal-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .hero-signal-strip > div {
@@ -1419,12 +1435,19 @@ canvas {
 }
 
 .card-meta,
-.card-bottom,
-.action-row {
+.card-bottom {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 .pagination-row {

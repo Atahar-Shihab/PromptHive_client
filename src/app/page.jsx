@@ -137,7 +137,7 @@ export default function HomePage() {
   return (
     <>
       <section className="hero">
-        <div className="hero-inner hero-composition relative grid gap-10 lg:grid-cols-[minmax(0,0.98fr)_minmax(360px,0.72fr)] lg:items-end">
+        <div className="hero-inner hero-composition relative grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:items-center">
           <motion.div
             className="hero-copy"
             initial={{ opacity: 0, y: 30 }}
