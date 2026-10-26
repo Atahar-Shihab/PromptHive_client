@@ -553,11 +553,12 @@ canvas {
 }
 
 .hero-tags span,
+.hero-tags button,
 .tag-chip-btn {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .tag-chip-btn {
@@ -576,9 +577,9 @@ canvas {
 }
 
 .tag-chip-btn:hover {
-  color: #fff;
-  border-color: color-mix(in srgb, var(--cyan), transparent 45%);
-  background: color-mix(in srgb, var(--cyan), transparent 75%);
+  color: var(--primary);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary), transparent 82%);
   transform: translateY(-1px);
 }
 
@@ -2881,13 +2882,23 @@ th {
 }
 
 [data-theme="light"] .hero-tags span,
+[data-theme="light"] .hero-tags button,
+[data-theme="light"] .tag-chip-btn,
 [data-theme="light"] .tag-row span,
 [data-theme="light"] .status-pill,
 [data-theme="light"] .workspace-status span,
 [data-theme="light"] .signal-board span {
-  background: color-mix(in srgb, var(--primary), transparent 92%);
-  border-color: color-mix(in srgb, var(--primary), transparent 85%);
-  color: #475569;
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .tag-chip-btn:hover,
+[data-theme="light"] .hero-tags button:hover {
+  background: #f1f5f9;
+  color: var(--primary) !important;
+  border-color: var(--primary);
 }
 
 [data-theme="light"] .hero-signal-strip > div,
@@ -2897,8 +2908,9 @@ th {
 [data-theme="light"] .showcase-metric strong,
 [data-theme="light"] .command-section,
 [data-theme="light"] .command-card,
+[data-theme="light"] .command-card h3,
 [data-theme="light"] .command-card p {
-  color: #0f172a;
+  color: #0f172a !important;
 }
 
 [data-theme="light"] .prompt-line {
@@ -6357,6 +6369,8 @@ th {
 }
 
 [data-theme="light"] .hero-tags span,
+[data-theme="light"] .hero-tags button,
+[data-theme="light"] .tag-chip-btn,
 [data-theme="light"] .ticker-track span,
 [data-theme="light"] .prompt-line,
 [data-theme="light"] .command-card p,
@@ -6365,10 +6379,11 @@ th {
 [data-theme="light"] .card-bottom,
 [data-theme="light"] .tag-row span,
 [data-theme="light"] .status-pill {
-  color: #26364d !important;
+  color: #1e293b !important;
 }
 
 [data-theme="light"] .prompt-card h3,
+[data-theme="light"] .command-card h3,
 [data-theme="light"] .info-card h3,
 [data-theme="light"] .creator-card h3,
 [data-theme="light"] .review-card h3,
@@ -10760,6 +10775,8 @@ body::before {
 
 .search-panel,
 .hero-tags span,
+.hero-tags button,
+.tag-chip-btn,
 .tag-row span,
 .status-pill,
 .neural-chip,
@@ -13851,4 +13868,150 @@ body::before {
   background: #f8fafc;
   border-color: #e2e8f0;
   color: #64748b;
+}
+
+
+/* ==========================================================================
+   THEME VISIBILITY & HIGH CONTRAST ENHANCEMENTS (LIGHT & DARK MODES)
+   ========================================================================== */
+
+/* Light Theme Text & Tag Visibility */
+[data-theme="light"] .hero-tags .tag-chip-btn,
+[data-theme="light"] .tag-chip-btn,
+[data-theme="light"] .hero-tags button,
+[data-theme="light"] .hero-tags span {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="light"] .hero-tags .tag-chip-btn:hover,
+[data-theme="light"] .tag-chip-btn:hover,
+[data-theme="light"] .hero-tags button:hover {
+  background: #f1f5f9 !important;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Light Theme Eyebrow Badges */
+[data-theme="light"] .eyebrow {
+  color: #0f766e !important;
+  background: rgba(15, 118, 110, 0.1) !important;
+  border: 1px solid rgba(15, 118, 110, 0.28) !important;
+  font-weight: 850 !important;
+}
+
+/* Light Theme Command/Studio Cards (Why Choose Us / Discovery Engine) */
+[data-theme="light"] .command-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .command-card h3 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .command-card p {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .command-card > span {
+  color: var(--primary) !important;
+  font-weight: 850 !important;
+}
+
+[data-theme="light"] .command-icon {
+  background: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: var(--primary) !important;
+}
+
+/* Light Theme Signal Board & Tickers */
+[data-theme="light"] .signal-board span {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+  font-weight: 700 !important;
+}
+
+/* Light Theme Prompt Tags & Metadata in Cards */
+[data-theme="light"] .tag-row span {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .card-meta span {
+  color: #475569 !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="light"] .card-bottom {
+  color: #334155 !important;
+  font-weight: 650 !important;
+}
+
+/* Light Theme Search Panel */
+[data-theme="light"] .search-panel {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .search-panel input {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .search-panel input::placeholder {
+  color: #64748b !important;
+}
+
+/* Light Theme Hero Signal Strip (Stat Cards) */
+[data-theme="light"] .hero-signal-strip > div {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .hero-signal-strip strong {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .hero-signal-strip span {
+  color: #475569 !important;
+  font-weight: 750 !important;
+}
+
+/* Light Theme Ticker Track */
+[data-theme="light"] .hero-ticker {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+[data-theme="light"] .ticker-track span {
+  color: #334155 !important;
+  font-weight: 800 !important;
+}
+
+/* Dark Theme Consistency */
+[data-theme="dark"] .hero-tags .tag-chip-btn,
+[data-theme="dark"] .tag-chip-btn {
+  background: rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .hero-tags .tag-chip-btn:hover,
+[data-theme="dark"] .tag-chip-btn:hover {
+  background: color-mix(in srgb, var(--primary), transparent 78%);
+  color: #ffffff;
+  border-color: var(--primary);
 }

@@ -382,7 +382,7 @@ export default function HomePage() {
             const Icon = item.icon;
             return (
               <motion.article
-                className="command-card group rounded-lg border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur"
+                className="command-card group"
                 key={item.title}
                 initial={{ opacity: 0, y: 22 }}
                 whileInView={{ opacity: 1, y: 0 }}
