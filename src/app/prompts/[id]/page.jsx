@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { AlertCircle, AlertTriangle, Bookmark, BookmarkCheck, CheckCircle2, Copy, Download, Flag, Gauge, GitFork, ListChecks, Lock, Send, Share2, Sparkles, Star } from "lucide-react";
 import { toast } from "react-toastify";
 import { absoluteUploadUrl, apiFetch } from "@/lib/api";
@@ -179,17 +178,13 @@ export default function PromptDetailsPage() {
 
   useEffect(() => {
     if (isPending) return;
-    if (!session) {
-      router.replace(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
-      return;
-    }
     setError("");
     setCopied(false);
     apiFetch(`/api/prompts/${id}`)
       .then(setPrompt)
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false));
-  }, [id, isPending, router, session]);
+  }, [id, isPending]);
 
   async function refresh() {
     try {
@@ -200,6 +195,7 @@ export default function PromptDetailsPage() {
   }
 
   async function bookmark() {
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     try {
       const result = await apiFetch(`/api/bookmarks/${id}`, { method: "POST" });
       toast.success(result.message);
@@ -211,6 +207,7 @@ export default function PromptDetailsPage() {
 
   async function copyPrompt() {
     if (prompt.locked) return router.push(`/payment?from=/prompts/${id}`);
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     try {
       await navigator.clipboard.writeText(prompt.content);
       const result = await apiFetch(`/api/prompts/${id}/copy`, { method: "PATCH" });
@@ -224,6 +221,7 @@ export default function PromptDetailsPage() {
 
   async function review(event) {
     event.preventDefault();
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     if (prompt.locked) return router.push(`/payment?from=/prompts/${id}`);
     const reviewForm = event.currentTarget;
     const form = new FormData(reviewForm);
@@ -259,6 +257,7 @@ export default function PromptDetailsPage() {
   }
 
   async function forkPrompt() {
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     if (prompt.locked) return router.push(`/payment?from=/prompts/${id}`);
     try {
       await apiFetch(`/api/prompts/${id}/fork`, { method: "POST", body: JSON.stringify({}) });
@@ -271,7 +270,9 @@ export default function PromptDetailsPage() {
 
   async function downloadPdf() {
     if (prompt.locked) return router.push(`/payment?from=/prompts/${id}`);
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     try {
+      const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
       const pdf = await PDFDocument.create();
       let page = pdf.addPage([595, 842]);
       const titleFont = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -321,6 +322,7 @@ export default function PromptDetailsPage() {
   }
 
   async function testPrompt() {
+    if (!session) return router.push(`/login?redirect=${encodeURIComponent(`/prompts/${id}`)}`);
     if (prompt.locked) return router.push(`/payment?from=/prompts/${id}`);
     setTesting(true);
     setTestOutput("");
