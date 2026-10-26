@@ -8564,7 +8564,8 @@ th {
 /* Premium home coverflow carousel, inspired by product collection swipers. */
 .premium-swiper-section {
   overflow: hidden;
-  padding: 84px 0 104px;
+  padding: 104px 0 112px;
+  scroll-margin-top: 80px;
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--primary), transparent 84%), transparent 36%),
     radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--cyan), transparent 86%), transparent 38%),
@@ -8584,6 +8585,7 @@ th {
   display: grid;
   justify-items: center;
   text-align: center;
+  margin-bottom: 12px;
 }
 
 .premium-coverflow-heading::after {
@@ -8628,24 +8630,24 @@ th {
   position: relative;
   width: min(1360px, calc(100% - 24px));
   min-height: 590px;
-  margin: 28px auto 0;
+  margin: 16px auto 0;
   perspective: 1600px;
 }
 
 .premium-coverflow::before {
   content: "";
   position: absolute;
-  inset: 72px clamp(18px, 8vw, 110px) 80px;
+  inset: 0 clamp(10px, 4vw, 40px) 48px;
   z-index: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 36px;
   background:
-    radial-gradient(circle at 18% 34%, color-mix(in srgb, var(--primary), transparent 75%), transparent 32%),
-    radial-gradient(circle at 82% 36%, color-mix(in srgb, var(--cyan), transparent 82%), transparent 30%),
-    linear-gradient(135deg, rgba(20, 16, 28, 0.75), rgba(12, 16, 24, 0.65));
+    radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--primary), transparent 88%), transparent 55%),
+    radial-gradient(circle at 82% 40%, color-mix(in srgb, var(--cyan), transparent 90%), transparent 45%),
+    linear-gradient(135deg, rgba(20, 16, 28, 0.45), rgba(12, 16, 24, 0.35));
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.35),
-    0 0 60px color-mix(in srgb, var(--primary), transparent 90%) inset;
+    0 30px 80px rgba(0, 0, 0, 0.28),
+    0 0 60px color-mix(in srgb, var(--primary), transparent 92%) inset;
   backdrop-filter: blur(20px);
   pointer-events: none;
 }
@@ -8658,21 +8660,21 @@ th {
 .premium-coverflow-stage {
   position: relative;
   z-index: 5;
-  height: 490px;
+  height: 500px;
   overflow: visible;
   transform-style: preserve-3d;
 }
 
 .coverflow-card {
   position: absolute;
-  top: 24px;
+  top: 16px;
   left: 50%;
   display: grid;
   grid-template-rows: 154px 1fr;
   width: min(340px, 78vw);
   height: 440px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f8fafc;
   background: linear-gradient(180deg, rgba(22, 18, 34, 0.94), rgba(13, 11, 20, 0.98));
@@ -8692,17 +8694,17 @@ th {
 }
 
 .coverflow-card.active {
-  top: 10px;
+  top: 6px;
   width: min(368px, 82vw);
-  height: 468px;
+  height: 462px;
   grid-template-rows: 164px 1fr;
-  border: 1px solid color-mix(in srgb, var(--primary), #ffffff 25%);
+  border: 1px solid color-mix(in srgb, var(--primary), #ffffff 28%);
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary), transparent 68%), transparent 60%),
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary), transparent 66%), transparent 60%),
     linear-gradient(180deg, rgba(28, 23, 44, 0.98), rgba(15, 12, 24, 0.99));
   box-shadow:
     0 34px 90px rgba(0, 0, 0, 0.65),
-    0 0 50px color-mix(in srgb, var(--primary), transparent 72%),
+    0 0 46px color-mix(in srgb, var(--primary), transparent 70%),
     0 0 0 1px rgba(255, 255, 255, 0.22) inset;
   cursor: default;
 }
@@ -8965,31 +8967,31 @@ th {
 
 .coverflow-arrow {
   position: absolute;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
-  z-index: 60;
+  z-index: 85;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   color: #ffffff;
-  background: rgba(18, 14, 28, 0.88);
+  background: rgba(18, 14, 28, 0.92);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.5),
-    0 0 24px rgba(124, 58, 237, 0.25);
-  backdrop-filter: blur(18px);
+    0 0 24px color-mix(in srgb, var(--primary), transparent 70%);
+  backdrop-filter: blur(20px);
   cursor: pointer;
   transition: all 220ms ease;
 }
 
 .coverflow-arrow.left {
-  left: clamp(8px, 3vw, 40px);
+  left: max(10px, calc(50% - 630px));
 }
 
 .coverflow-arrow.right {
-  right: clamp(8px, 3vw, 40px);
+  right: max(10px, calc(50% - 630px));
 }
 
 .coverflow-arrow:hover {
@@ -9005,7 +9007,7 @@ th {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 36px;
 }
 
 .coverflow-dots button {
@@ -12224,13 +12226,11 @@ body::before {
 }
 
 .coverflow-card {
-  border-radius: 26px;
+  border-radius: 22px;
 }
 
 .coverflow-card.active {
-  width: min(368px, 78vw);
-  height: 408px;
-  border-radius: 28px;
+  border-radius: 24px;
 }
 
 .coverflow-card-body h3 {
