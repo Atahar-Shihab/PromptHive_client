@@ -7617,9 +7617,15 @@ th {
 
 .test-metrics {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 640px) {
+  .test-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .test-metrics span {
@@ -7649,8 +7655,14 @@ th {
 
 .test-report-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .test-report-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .test-report-grid > div {
@@ -12228,38 +12240,172 @@ body::before {
     var(--gold);
 }
 
-.detail-side-panel .prompt-test-report {
-  padding: 14px;
-  border-radius: 22px;
+/* QA Audit Section in Prompt Details Main Column */
+.qa-audit-section {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.detail-side-panel .test-score-card {
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    "icon"
-    "score"
-    "label";
-  justify-items: center;
+.qa-audit-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.qa-audit-header h2 {
+  margin: 6px 0 0;
+  font-size: clamp(1.3rem, 2.8vw, 1.65rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f8fbff;
+}
+
+.qa-audit-desc {
+  margin: 0 0 20px;
+  color: rgba(226, 232, 240, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+/* Compact QA Card in Sidebar */
+.qa-sidebar-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--primary), transparent 82%), transparent 42%),
+    rgba(255, 255, 255, 0.035);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.qa-sidebar-card:hover {
+  border-color: color-mix(in srgb, var(--gold), transparent 60%);
+}
+
+.qa-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.qa-sidebar-copy {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: rgba(226, 232, 240, 0.65);
+  line-height: 1.5;
+}
+
+.qa-sidebar-jump {
+  display: block;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem;
+  font-weight: 700;
   text-align: center;
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 160ms ease, transform 160ms ease;
 }
 
-.detail-side-panel .test-score-card span {
-  text-align: center;
+.qa-sidebar-jump:hover {
+  opacity: 0.85;
+  transform: translateY(1px);
 }
 
-.detail-side-panel .test-metrics,
-.detail-side-panel .test-report-grid {
-  grid-template-columns: 1fr;
+/* Light Theme Adaptations for QA */
+[data-theme="light"] .qa-audit-section {
+  border-top-color: rgba(15, 23, 42, 0.08);
 }
 
-.detail-side-panel .test-report-grid > div,
-.detail-side-panel .test-metrics span {
-  min-width: 0;
+[data-theme="light"] .qa-audit-header h2 {
+  color: #0f172a;
 }
 
-.detail-side-panel .test-report-grid p,
-.detail-side-panel .test-metrics b {
-  overflow-wrap: anywhere;
+[data-theme="light"] .qa-audit-desc {
+  color: #475569;
+}
+
+[data-theme="light"] .qa-sidebar-card {
+  border-color: rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .qa-sidebar-head span {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .qa-sidebar-copy {
+  color: #64748b;
+}
+
+[data-theme="light"] .qa-sidebar-jump {
+  border-top-color: rgba(15, 23, 42, 0.08);
+  color: #b45309;
+}
+
+[data-theme="light"] .prompt-test-report {
+  border-color: color-mix(in srgb, var(--gold), transparent 50%);
+  background:
+    radial-gradient(circle at 14% 0%, rgba(251, 191, 36, 0.15), transparent 40%),
+    linear-gradient(145deg, rgba(255, 251, 235, 0.95), rgba(248, 250, 252, 0.98));
+  box-shadow:
+    0 22px 48px rgba(15, 23, 42, 0.08),
+    0 0 24px rgba(251, 191, 36, 0.1) inset;
+}
+
+[data-theme="light"] .test-score-card {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(34, 211, 238, 0.12)), #ffffff;
+  color: #0f172a;
+}
+
+[data-theme="light"] .test-score-card strong {
+  color: #0f172a;
+}
+
+[data-theme="light"] .test-score-card span {
+  color: #b45309;
+}
+
+[data-theme="light"] .test-report-body > p {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  color: #334155;
+}
+
+[data-theme="light"] .test-metrics span {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+}
+
+[data-theme="light"] .test-metrics small {
+  color: #b45309;
+}
+
+[data-theme="light"] .test-metrics b {
+  color: #0f172a;
+}
+
+[data-theme="light"] .test-report-grid > div {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+}
+
+[data-theme="light"] .test-report-grid h3 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .test-report-grid p {
+  color: #475569;
 }
 
 .coverflow-card {
