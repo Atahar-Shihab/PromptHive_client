@@ -22,13 +22,6 @@ export function PromptCard({ prompt, index = 0 }) {
     setBookmarked(Boolean(prompt.isBookmarked));
   }, [prompt.isBookmarked]);
 
-  function handleDetails(event) {
-    if (!session) {
-      event.preventDefault();
-      router.push(`/login?redirect=${encodeURIComponent(href)}`);
-    }
-  }
-
   async function toggleBookmark(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -105,7 +98,7 @@ export function PromptCard({ prompt, index = 0 }) {
         <div className="signal-meter">
           <span style={{ width: `${Math.min(96, 34 + Number(prompt.copyCount ?? 0) / 3)}%` }} />
         </div>
-        <Link href={href} onClick={handleDetails} className={cn("button block", premium && "premium-card-button")}>
+        <Link href={href} className={cn("button block", premium && "premium-card-button")}>
           <Sparkles size={17} /> {premium ? "Enter Premium Vault" : "View Details"}
         </Link>
       </div>

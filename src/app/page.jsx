@@ -53,18 +53,18 @@ function circularOffset(index, activeIndex, length) {
 function coverflowStyle(offset) {
   const distance = Math.abs(offset);
   const hidden = distance > 3;
-  const x = offset * 246;
-  const y = distance * 16;
-  const scale = Math.max(0.68, 1 - distance * 0.08);
-  const rotate = offset * -4.6;
-  const rotateY = offset * -14;
+  const x = offset * 318;
+  const y = distance * 12;
+  const scale = offset === 0 ? 1.04 : Math.max(0.78, 1 - distance * 0.08);
+  const rotate = offset * -1.8;
+  const rotateY = offset * -9;
 
   return {
-    zIndex: 80 - distance * 4,
-    opacity: hidden ? 0 : 1 - distance * 0.1,
+    zIndex: 80 - distance * 5,
+    opacity: hidden ? 0 : distance > 2 ? 0.35 : 1 - distance * 0.16,
     pointerEvents: hidden ? "none" : "auto",
-    filter: distance ? `saturate(${1 - distance * 0.05}) brightness(${1 - distance * 0.04})` : "none",
-    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${offset === 0 ? 1.04 : scale})`
+    filter: distance ? `saturate(${1 - distance * 0.06}) brightness(${1 - distance * 0.12})` : "none",
+    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${scale})`
   };
 }
 
@@ -307,19 +307,21 @@ export default function HomePage() {
 
       <section className="section premium-swiper-section">
         <div className="section-heading premium-coverflow-heading">
-          <p className="eyebrow">Premium swiper showcase</p>
+          <span className="eyebrow">
+            <Sparkles size={14} /> Curated Prompt Collections
+          </span>
           <h2>Explore Prompt Collections</h2>
-          <p>Swipe through curated private workflows built for marketing, research, design, automation, and strategy teams.</p>
+          <p>Swipe through curated AI workflows built for marketing, research, design, automation, and strategy teams.</p>
         </div>
         {loading ? (
           <SkeletonGrid />
         ) : premiumSlides.length ? (
           <div className="premium-coverflow" aria-label="Premium prompt coverflow carousel">
             <button className="coverflow-arrow left" type="button" aria-label="Previous collection" onClick={() => movePremiumSlide(-1)}>
-              <ChevronLeft size={22} />
+              <ChevronLeft size={24} />
             </button>
             <button className="coverflow-arrow right" type="button" aria-label="Next collection" onClick={() => movePremiumSlide(1)}>
-              <ChevronRight size={22} />
+              <ChevronRight size={24} />
             </button>
 
             <div className="premium-coverflow-stage">
@@ -354,9 +356,9 @@ export default function HomePage() {
 
                     <div className="coverflow-card-image">
                       <img src={promptImage} alt={prompt.title} />
-                      <span className={isVault ? "vault-badge" : ""}>
+                      <span className={isVault ? "vault-badge" : "category-badge"}>
                         {isVault ? <Lock size={13} /> : <Sparkles size={13} />}
-                        {isVault ? "Locked Workflow" : prompt.category}
+                        {isVault ? "Locked Vault" : prompt.category}
                       </span>
                       {isVault && (
                         <div className="coverflow-vault-lock">
@@ -367,12 +369,16 @@ export default function HomePage() {
                     </div>
 
                     <div className="coverflow-card-body">
-                      <div className={isVault ? "coverflow-vault-strip" : "coverflow-vault-strip public"}>
-                        {isVault ? <Lock size={14} /> : <Sparkles size={14} />}
-                        {isVault ? "Premium workflow preview" : "Open creator workflow"}
+                      <div className="coverflow-meta-row">
+                        <span className="coverflow-tool-chip">{prompt.aiTool}</span>
+                        <span className="coverflow-difficulty-chip">{prompt.difficulty}</span>
+                        {isVault ? (
+                          <span className="coverflow-vault-pill"><Crown size={12} /> Premium Vault</span>
+                        ) : (
+                          <span className="coverflow-free-pill">Public Workflow</span>
+                        )}
                       </div>
                       <h3>{prompt.title}</h3>
-                      <p>{prompt.aiTool} / {prompt.difficulty}</p>
                       <p className="coverflow-description">{prompt.description}</p>
                       <div className="coverflow-tags">
                         {prompt.tags?.slice(0, 3).map((tag) => (
@@ -382,10 +388,10 @@ export default function HomePage() {
                       <div className="coverflow-card-bottom">
                         <div className="coverflow-metrics">
                           <span>
-                            <Copy size={14} /> {prompt.copyCount ?? 0} copies
+                            <Copy size={13} /> {prompt.copyCount ?? 0} copies
                           </span>
                           <span>
-                            <Star size={14} /> {Number(prompt.avgRating ?? 0).toFixed(1)}
+                            <Star size={13} /> {Number(prompt.avgRating ?? 0).toFixed(1)}
                           </span>
                         </div>
                         <Link
@@ -394,7 +400,7 @@ export default function HomePage() {
                           aria-label={`View prompt ${prompt.title}`}
                           onClick={(event) => event.stopPropagation()}
                         >
-                          View Details <ArrowRight size={15} />
+                          View Details <ArrowRight size={14} />
                         </Link>
                       </div>
                     </div>
@@ -538,8 +544,9 @@ export default function HomePage() {
 
       <section className="section">
         <div className="section-heading">
-          <p className="eyebrow">Extra features</p>
-          <h2>Optional requirements included</h2>
+          <p className="eyebrow">Platform Capabilities</p>
+          <h2>Built for modern AI teams & creators</h2>
+          <p>Everything you need to author, evaluate, test, and ship high-performing prompt workflows.</p>
         </div>
         <div className="extra-grid">
           {extraSections.map((item, index) => {

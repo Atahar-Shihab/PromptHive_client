@@ -2,7 +2,7 @@
   "name": "prompthive-client",
   "version": "1.0.0",
   "private": true,
-  "description": "Next.js frontend for the AI Prompt Sharing and Marketplace Platform assignment.",
+  "description": "Production-grade Next.js client for PromptHive - AI Prompt Sharing & Marketplace Platform",
   "scripts": {
     "dev": "node ./scripts/start-dev.js",
     "clean": "node ./scripts/start-dev.js --clean-only",

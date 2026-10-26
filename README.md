@@ -84,7 +84,7 @@ The UI is designed around a polished marketplace identity with glass cards, prom
 | --- | --- | --- |
 | `/` | Public | Landing page and marketplace overview |
 | `/prompts` | Public | All approved prompts with filters and sorting |
-| `/prompts/[id]` | Private | Prompt details, reviews, copy, bookmark, report, fork, PDF, and premium lock |
+| `/prompts/[id]` | Public | Prompt details, reviews, copy, bookmark, report, fork, PDF, and premium lock |
 | `/login` | Public | Email and Google login |
 | `/register` | Public | Account registration with optional profile image upload |
 | `/payment` | Private | Stripe premium unlock |
@@ -161,14 +161,15 @@ The backend must also be running at the URL configured in `NEXT_PUBLIC_API_URL`.
 | `npm run build` | Build the production app |
 | `npm run start` | Start the production build |
 
-## Demo Admin
+## Demo Accounts (1-Click Login on /login)
 
-The backend seed script creates the demo admin account.
+The platform provides 1-click demo login buttons directly on the `/login` screen:
 
-```text
-Email: admin@demo.com
-Password: admin1234
-```
+| Role | Email | Password | Scope & Permissions |
+| :--- | :--- | :--- | :--- |
+| **👑 Admin** | `admin@demo.com` | `admin1234` | Full moderation, prompt approvals/rejections, payment logs, user roles & analytics |
+| **🎨 Creator** | `creator@demo.com` | `creator1234` | Creator tools, publish prompt workflows, monitor copies, ratings & performance |
+| **🚀 Buyer / Pro** | `user@demo.com` | `user1234` | Explore public & private prompts, bookmark, copy workflows, write reviews |
 
 ## Deployment
 
