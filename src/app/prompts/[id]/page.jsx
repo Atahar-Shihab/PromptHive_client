@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { AlertCircle, AlertTriangle, Bookmark, BookmarkCheck, CheckCircle2, Copy, Download, Flag, Gauge, GitFork, ListChecks, Lock, Send, Share2, Sparkles, Star } from "lucide-react";
+import { AlertCircle, AlertTriangle, Bookmark, BookmarkCheck, CheckCircle2, Copy, Download, Flag, Gauge, GitFork, ListChecks, Loader2, Lock, Send, Share2, Sparkles, Star } from "lucide-react";
 import { toast } from "react-toastify";
 import { absoluteUploadUrl, apiFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
@@ -122,10 +122,15 @@ function PromptTestReport({ report, output }) {
     ["Output", report.metrics?.outputFormat ? "Present" : "Missing"]
   ];
 
+  const strengths = report.strengths?.length ? report.strengths : ["Prompt defines a solid functional baseline."];
+  const issues = report.issues?.length ? report.issues : ["No major structural blockers detected."];
+  const recommendations = report.recommendations?.length ? report.recommendations.slice(0, 4) : ["Specify tone and concrete parameters for optimal consistency."];
+  const sampleInput = report.sampleInput?.length ? report.sampleInput.slice(0, 4) : ["Test this prompt with real project data and custom audience constraints."];
+
   return (
     <div className="prompt-test-report">
       <div className="test-score-card">
-        <Gauge size={22} />
+        <Gauge size={24} />
         <strong>{Math.round(report.score)}</strong>
         <span>{report.quality}</span>
       </div>
@@ -142,19 +147,19 @@ function PromptTestReport({ report, output }) {
         <div className="test-report-grid">
           <div>
             <h3><CheckCircle2 size={16} /> Strengths</h3>
-            {(report.strengths?.length ? report.strengths : ["Good starting structure."]).map((item) => <p key={item}>{item}</p>)}
+            {strengths.map((item) => <p key={item}>{item}</p>)}
           </div>
           <div>
             <h3><AlertCircle size={16} /> Fix next</h3>
-            {(report.issues?.length ? report.issues : ["No major gaps detected."]).map((item) => <p key={item}>{item}</p>)}
+            {issues.map((item) => <p key={item}>{item}</p>)}
           </div>
           <div>
             <h3><ListChecks size={16} /> Recommendations</h3>
-            {(report.recommendations ?? []).slice(0, 3).map((item) => <p key={item}>{item}</p>)}
+            {recommendations.map((item) => <p key={item}>{item}</p>)}
           </div>
           <div>
             <h3><Sparkles size={16} /> Sample test input</h3>
-            {(report.sampleInput ?? []).slice(0, 3).map((item) => <p key={item}>{item}</p>)}
+            {sampleInput.map((item) => <p key={item}>{item}</p>)}
           </div>
         </div>
       </div>
@@ -330,13 +335,20 @@ export default function PromptDetailsPage() {
     try {
       const result = await apiFetch("/api/ai/test-prompt", {
         method: "POST",
-        body: JSON.stringify({ prompt: prompt.content, provider: "openai" })
+        body: JSON.stringify({ prompt: prompt.content, provider: "auto" })
       });
       setTestReport(result.report ?? null);
       setTestOutput(result.report ? "" : result.output);
       if (result.fallback) {
         toast.info("Live AI unavailable, showing PromptHive QA report.");
+      } else {
+        const providerName = result.provider === "gemini" ? "Gemini AI" : result.provider === "openai" ? "OpenAI" : "Live AI";
+        toast.success(`Prompt quality analyzed by ${providerName}!`);
       }
+      setTimeout(() => {
+        const el = document.getElementById("prompt-quality-scan");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
     } catch (error) {
       setTestReport(localPromptReport(prompt.content, "PromptHive generated an instant browser quality scan for this prompt."));
       toast.info("Prompt quality scan generated.");
@@ -414,6 +426,43 @@ export default function PromptDetailsPage() {
           <h2>Usage Instructions</h2>
           <p>Use this prompt directly in {prompt.aiTool}. Add your real project notes above or below it if needed, then review the output and ask for a tighter second version with clearer constraints.</p>
         </div>
+
+        <section id="prompt-quality-scan" className="qa-audit-section">
+          <div className="qa-audit-header">
+            <div>
+              <span className="eyebrow flex items-center gap-1.5">
+                <Sparkles size={14} className="text-amber-400" /> Automated AI QA Inspector
+              </span>
+              <h2>Prompt Quality & Architecture Scan</h2>
+            </div>
+            <button className="button qa-scan-button" onClick={testPrompt} disabled={testing}>
+              {testing ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} /> Scanning...
+                </>
+              ) : locked ? (
+                <>
+                  <Lock size={16} /> Unlock Scan
+                </>
+              ) : testReport ? (
+                <>
+                  <Sparkles size={16} /> Re-scan Prompt
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} /> Run Quality Scan
+                </>
+              )}
+            </button>
+          </div>
+          <p className="qa-audit-desc">
+            {locked
+              ? "Unlock this private prompt to run an in-depth audit on structure, context completeness, role framing, and production readiness."
+              : "Audit prompt structure, clarity, expected output formatting, and missing constraints using PromptHive's AI QA engine."}
+          </p>
+
+          <PromptTestReport report={testReport} output={testOutput} />
+        </section>
 
         <div className="review-section-head">
           <div>
@@ -500,15 +549,46 @@ export default function PromptDetailsPage() {
           </button>
         </div>
 
-        <div className="payment-panel qa-panel">
-          <h2>
-            <Sparkles size={20} /> Prompt Quality Scan
-          </h2>
-          <p>{locked ? "Unlock this private prompt to scan its structure, clarity, and output readiness." : "Scan structure, context, output format, and missing constraints before you use the prompt."}</p>
-          <button className="button qa-scan-button" onClick={testPrompt} disabled={testing}>
-            {testing ? "Scanning..." : locked ? "Unlock Scan" : "Run Quality Scan"}
+        <div className="qa-sidebar-card">
+          <div className="qa-sidebar-head">
+            <span className="flex items-center gap-2 font-bold text-white/90">
+              <Sparkles size={16} className="text-amber-400" /> Quality Scan
+            </span>
+            {testReport && (
+              <span className="stamp-badge stamp-badge--approved text-xs">
+                {Math.round(testReport.score)}/100
+              </span>
+            )}
+          </div>
+          <p className="qa-sidebar-copy">
+            {testReport
+              ? `${testReport.quality} rating • ${testReport.metrics?.wordCount ?? 0} words`
+              : "Scan role, context completeness, and output format."}
+          </p>
+          <button className="button qa-scan-button mt-3 w-full" onClick={testPrompt} disabled={testing}>
+            {testing ? (
+              <>
+                <Loader2 className="animate-spin" size={16} /> Scanning...
+              </>
+            ) : locked ? (
+              <>
+                <Lock size={16} /> Unlock Scan
+              </>
+            ) : testReport ? (
+              <>
+                <Sparkles size={16} /> Re-scan Prompt
+              </>
+            ) : (
+              <>
+                <Sparkles size={16} /> Run Quality Scan
+              </>
+            )}
           </button>
-          <PromptTestReport report={testReport} output={testOutput} />
+          {testReport && (
+            <a href="#prompt-quality-scan" className="qa-sidebar-jump">
+              View Detailed QA Breakdown ↓
+            </a>
+          )}
         </div>
       </aside>
       {reporting && <ReportModal promptId={id} onClose={() => setReporting(false)} />}
