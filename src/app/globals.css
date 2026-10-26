@@ -181,13 +181,15 @@ canvas {
 .site-header-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 22px;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
 }
 
 .site-header + main {
@@ -483,7 +485,8 @@ canvas {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
-  max-width: 760px;
+  width: 100%;
+  max-width: 100%;
   margin: 28px 0 18px;
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -522,11 +525,17 @@ canvas {
   color: rgba(255, 255, 255, 0.72);
 }
 
-.tag-row,
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .hero-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-bottom: 24px;
 }
 
 .tag-row span,
@@ -577,8 +586,15 @@ canvas {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  max-width: 920px;
-  margin-top: 34px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0;
+}
+
+@media (max-width: 1180px) {
+  .hero-signal-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .hero-signal-strip > div {
@@ -1419,12 +1435,19 @@ canvas {
 }
 
 .card-meta,
-.card-bottom,
-.action-row {
+.card-bottom {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
 .pagination-row {
@@ -5798,48 +5821,39 @@ th {
 
 .premium-avatar-frame {
   position: relative;
-  display: grid;
-  width: 40px;
-  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
-  place-items: center;
-  overflow: visible;
-  border-radius: 999px;
-  isolation: isolate;
-  background: rgba(10, 10, 15, 0.88);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--gold), transparent 72%),
-    0 0 22px color-mix(in srgb, var(--gold), transparent 72%),
-    0 0 42px color-mix(in srgb, var(--cyan), transparent 78%);
+  border-radius: 9999px;
+  padding: 2px;
+  overflow: hidden;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--gold), transparent 60%);
 }
 
 .premium-avatar-frame::before {
   content: "";
   position: absolute;
-  inset: -5px;
-  z-index: -1;
-  border-radius: inherit;
+  inset: -50%;
+  border-radius: 9999px;
   background: conic-gradient(from 0deg, var(--gold), var(--primary), var(--cyan), var(--gold));
-  filter: blur(7px);
-  opacity: 0.9;
-  animation: premiumSpin 3.2s linear infinite;
+  animation: premiumSpin 3.5s linear infinite;
+  z-index: 0;
 }
 
 .premium-avatar-frame::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  border: 1px solid color-mix(in srgb, var(--gold), transparent 32%);
-  box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.14);
-  pointer-events: none;
+  display: none;
 }
 
 .premium-avatar-frame img,
 .premium-avatar-frame > span {
   position: relative;
   z-index: 1;
-  border-radius: inherit;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  object-fit: cover;
+  display: block;
 }
 
 .profile-avatar-large.premium-avatar-glow {
@@ -6088,11 +6102,7 @@ th {
 }
 
 [data-theme="light"] .premium-avatar-frame {
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--gold), transparent 70%),
-    0 0 24px color-mix(in srgb, var(--gold), transparent 74%),
-    0 0 44px color-mix(in srgb, var(--cyan), transparent 82%);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--gold), transparent 64%);
 }
 
 [data-theme="light"] .premium-access-card {
@@ -6472,6 +6482,23 @@ th {
   color: var(--cyan);
   transform: translateY(-1px) rotate(-8deg) scale(1.08);
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--cyan), transparent 45%));
+}
+
+.dashboard-shell-topbar .theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  display: grid;
+  place-items: center;
+}
+
+[data-theme="light"] .dashboard-shell-topbar .theme-toggle {
+  border-color: rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.86);
+  color: #243244;
 }
 
 .dashboard-shell-topbar .theme-toggle,
@@ -7062,10 +7089,16 @@ th {
   transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-.dashboard-sidebar-profile .premium-avatar-frame,
+.dashboard-sidebar-profile .premium-avatar-frame {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
 .dashboard-user-pill .premium-avatar-frame {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
 
 .dashboard-sidebar-profile strong,
@@ -7075,9 +7108,13 @@ th {
   white-space: nowrap;
 }
 
+[data-theme="light"] .dashboard-user-name {
+  color: #0f172a !important;
+}
+
 .dashboard-user-pill {
   min-width: 0;
-  max-width: 220px;
+  max-width: 240px;
 }
 
 .dashboard-sidebar-profile:hover {
@@ -8564,7 +8601,8 @@ th {
 /* Premium home coverflow carousel, inspired by product collection swipers. */
 .premium-swiper-section {
   overflow: hidden;
-  padding: 84px 0 104px;
+  padding: 104px 0 112px;
+  scroll-margin-top: 80px;
   background:
     radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--primary), transparent 84%), transparent 36%),
     radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--cyan), transparent 86%), transparent 38%),
@@ -8584,6 +8622,7 @@ th {
   display: grid;
   justify-items: center;
   text-align: center;
+  margin-bottom: 12px;
 }
 
 .premium-coverflow-heading::after {
@@ -8628,24 +8667,24 @@ th {
   position: relative;
   width: min(1360px, calc(100% - 24px));
   min-height: 590px;
-  margin: 28px auto 0;
+  margin: 16px auto 0;
   perspective: 1600px;
 }
 
 .premium-coverflow::before {
   content: "";
   position: absolute;
-  inset: 72px clamp(18px, 8vw, 110px) 80px;
+  inset: 0 clamp(10px, 4vw, 40px) 48px;
   z-index: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 36px;
   background:
-    radial-gradient(circle at 18% 34%, color-mix(in srgb, var(--primary), transparent 75%), transparent 32%),
-    radial-gradient(circle at 82% 36%, color-mix(in srgb, var(--cyan), transparent 82%), transparent 30%),
-    linear-gradient(135deg, rgba(20, 16, 28, 0.75), rgba(12, 16, 24, 0.65));
+    radial-gradient(circle at 50% 25%, color-mix(in srgb, var(--primary), transparent 88%), transparent 55%),
+    radial-gradient(circle at 82% 40%, color-mix(in srgb, var(--cyan), transparent 90%), transparent 45%),
+    linear-gradient(135deg, rgba(20, 16, 28, 0.45), rgba(12, 16, 24, 0.35));
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.35),
-    0 0 60px color-mix(in srgb, var(--primary), transparent 90%) inset;
+    0 30px 80px rgba(0, 0, 0, 0.28),
+    0 0 60px color-mix(in srgb, var(--primary), transparent 92%) inset;
   backdrop-filter: blur(20px);
   pointer-events: none;
 }
@@ -8658,21 +8697,21 @@ th {
 .premium-coverflow-stage {
   position: relative;
   z-index: 5;
-  height: 490px;
+  height: 500px;
   overflow: visible;
   transform-style: preserve-3d;
 }
 
 .coverflow-card {
   position: absolute;
-  top: 24px;
+  top: 16px;
   left: 50%;
   display: grid;
   grid-template-rows: 154px 1fr;
   width: min(340px, 78vw);
   height: 440px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f8fafc;
   background: linear-gradient(180deg, rgba(22, 18, 34, 0.94), rgba(13, 11, 20, 0.98));
@@ -8692,17 +8731,17 @@ th {
 }
 
 .coverflow-card.active {
-  top: 10px;
+  top: 6px;
   width: min(368px, 82vw);
-  height: 468px;
+  height: 462px;
   grid-template-rows: 164px 1fr;
-  border: 1px solid color-mix(in srgb, var(--primary), #ffffff 25%);
+  border: 1px solid color-mix(in srgb, var(--primary), #ffffff 28%);
   background:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary), transparent 68%), transparent 60%),
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary), transparent 66%), transparent 60%),
     linear-gradient(180deg, rgba(28, 23, 44, 0.98), rgba(15, 12, 24, 0.99));
   box-shadow:
     0 34px 90px rgba(0, 0, 0, 0.65),
-    0 0 50px color-mix(in srgb, var(--primary), transparent 72%),
+    0 0 46px color-mix(in srgb, var(--primary), transparent 70%),
     0 0 0 1px rgba(255, 255, 255, 0.22) inset;
   cursor: default;
 }
@@ -8965,31 +9004,31 @@ th {
 
 .coverflow-arrow {
   position: absolute;
-  top: 50%;
+  top: 48%;
   transform: translateY(-50%);
-  z-index: 60;
+  z-index: 85;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   color: #ffffff;
-  background: rgba(18, 14, 28, 0.88);
+  background: rgba(18, 14, 28, 0.92);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.5),
-    0 0 24px rgba(124, 58, 237, 0.25);
-  backdrop-filter: blur(18px);
+    0 0 24px color-mix(in srgb, var(--primary), transparent 70%);
+  backdrop-filter: blur(20px);
   cursor: pointer;
   transition: all 220ms ease;
 }
 
 .coverflow-arrow.left {
-  left: clamp(8px, 3vw, 40px);
+  left: max(10px, calc(50% - 630px));
 }
 
 .coverflow-arrow.right {
-  right: clamp(8px, 3vw, 40px);
+  right: max(10px, calc(50% - 630px));
 }
 
 .coverflow-arrow:hover {
@@ -9005,7 +9044,7 @@ th {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 36px;
 }
 
 .coverflow-dots button {
@@ -12224,13 +12263,11 @@ body::before {
 }
 
 .coverflow-card {
-  border-radius: 26px;
+  border-radius: 22px;
 }
 
 .coverflow-card.active {
-  width: min(368px, 78vw);
-  height: 408px;
-  border-radius: 28px;
+  border-radius: 24px;
 }
 
 .coverflow-card-body h3 {

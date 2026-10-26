@@ -104,9 +104,9 @@ function Avatar({ user, className = "" }) {
   const imageSrc = absoluteUploadUrl(user.image);
   if (premium) {
     return (
-      <span className={cn("premium-avatar-frame", className)} title="Premium member">
+      <span className={cn("premium-avatar-frame shrink-0", className)} title="Premium member">
         {showImage ? (
-          <img src={imageSrc} alt="" className="h-full w-full rounded-full object-cover" onError={() => setImageFailed(true)} />
+          <img src={imageSrc} alt={user.name || "User avatar"} className="h-full w-full rounded-full object-cover" onError={() => setImageFailed(true)} />
         ) : (
           <span className="grid h-full w-full place-items-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-black text-white shadow-lg shadow-violet-500/20">
             {initials(user.name)}
@@ -117,11 +117,11 @@ function Avatar({ user, className = "" }) {
   }
 
   if (showImage) {
-    return <img src={imageSrc} alt="" className={cn("h-10 w-10 rounded-full object-cover ring-1 ring-white/10", className)} onError={() => setImageFailed(true)} />;
+    return <img src={imageSrc} alt={user.name || "User avatar"} className={cn("h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-white/10", className)} onError={() => setImageFailed(true)} />;
   }
 
   return (
-    <span className={cn("grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-black text-white shadow-lg shadow-violet-500/20 ring-1 ring-white/10", className)}>
+    <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-black text-white shadow-lg shadow-violet-500/20 ring-1 ring-white/10", className)}>
       {initials(user.name)}
     </span>
   );
@@ -378,9 +378,9 @@ export function DashboardShell({ user, mode, children }) {
             </Link>
             <NotificationBell />
             <ThemeToggle />
-            <div className="dashboard-user-pill hidden items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-1.5 pr-3 md:flex">
+            <div className="dashboard-user-pill hidden h-11 items-center gap-2.5 rounded-2xl border border-white/[0.08] bg-white/[0.04] p-1.5 pr-3.5 md:flex">
               <Avatar user={user} className="h-8 w-8" />
-              <span className="dashboard-user-name max-w-28 truncate text-sm font-semibold text-white/70">{user.name}</span>
+              <span className="dashboard-user-name max-w-36 truncate text-sm font-semibold text-white/80">{user.name}</span>
             </div>
             <button className="grid h-11 w-11 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/60 transition hover:text-white" onClick={signOut} title="Logout">
               <LogOut size={18} />

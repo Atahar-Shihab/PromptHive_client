@@ -34,11 +34,16 @@ const studioCards = [
 ];
 
 function uniquePrompts(...groups) {
-  const prompts = new Map();
+  const byId = new Map();
+  const byTitle = new Set();
   groups.flat().forEach((prompt) => {
-    if (prompt?._id) prompts.set(prompt._id, prompt);
+    const key = (prompt?.title ?? "").trim().toLowerCase();
+    if (prompt?._id && key && !byTitle.has(key)) {
+      byTitle.add(key);
+      byId.set(prompt._id, prompt);
+    }
   });
-  return Array.from(prompts.values());
+  return Array.from(byId.values());
 }
 
 function circularOffset(index, activeIndex, length) {
@@ -52,19 +57,18 @@ function circularOffset(index, activeIndex, length) {
 
 function coverflowStyle(offset) {
   const distance = Math.abs(offset);
-  const hidden = distance > 3;
-  const x = offset * 318;
-  const y = distance * 12;
-  const scale = offset === 0 ? 1.04 : Math.max(0.78, 1 - distance * 0.08);
-  const rotate = offset * -1.8;
-  const rotateY = offset * -9;
+  const hidden = distance > 2;
+  const x = offset === 0 ? 0 : Math.sign(offset) * (380 + (distance - 1) * 280);
+  const y = distance * 10;
+  const scale = offset === 0 ? 1.04 : distance === 1 ? 0.88 : 0.74;
+  const rotateY = offset * -12;
 
   return {
-    zIndex: 80 - distance * 5,
-    opacity: hidden ? 0 : distance > 2 ? 0.35 : 1 - distance * 0.16,
+    zIndex: 80 - distance * 10,
+    opacity: hidden ? 0 : distance === 2 ? 0.28 : distance === 1 ? 0.72 : 1,
     pointerEvents: hidden ? "none" : "auto",
-    filter: distance ? `saturate(${1 - distance * 0.06}) brightness(${1 - distance * 0.12})` : "none",
-    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${rotate}deg) rotateY(${rotateY}deg) scale(${scale})`
+    filter: distance === 0 ? "none" : `brightness(${1 - distance * 0.14}) saturate(0.92)`,
+    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotateY(${rotateY}deg) scale(${scale})`
   };
 }
 
@@ -133,7 +137,7 @@ export default function HomePage() {
   return (
     <>
       <section className="hero">
-        <div className="hero-inner hero-composition relative grid gap-10 lg:grid-cols-[minmax(0,0.98fr)_minmax(360px,0.72fr)] lg:items-end">
+        <div className="hero-inner hero-composition relative grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)] lg:items-center">
           <motion.div
             className="hero-copy"
             initial={{ opacity: 0, y: 30 }}
