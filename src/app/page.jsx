@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Boxes, ChevronLeft, ChevronRight, Copy, Crown, Gem, Layers3, Lock, Search, ShieldCheck, Sparkles, Star, TrendingUp, Users, Zap } from "lucide-react";
+import { ArrowRight, Boxes, ChevronLeft, ChevronRight, Copy, Crown, Gem, Layers3, LayoutGrid, Lock, Search, ShieldCheck, SlidersHorizontal, Sparkles, Star, TrendingUp, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { absoluteUploadUrl, apiFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { benefitCards, extraSections, tools, trendingTags } from "@/lib/constants";
+import { cn } from "@/lib/format";
 import { PromptCard } from "@/components/PromptCard";
 import { SkeletonGrid } from "@/components/Spinner";
 
@@ -46,30 +47,71 @@ function uniquePrompts(...groups) {
   return Array.from(byId.values());
 }
 
-function circularOffset(index, activeIndex, length) {
-  if (!length) return 0;
-  let offset = index - activeIndex;
-  const half = Math.floor(length / 2);
-  if (offset > half) offset -= length;
-  if (offset < -half) offset += length;
-  return offset;
-}
+function ShowcaseCard({ prompt }) {
+  const isVault = prompt.visibility === "private";
+  const promptImage = prompt.thumbnailUrl
+    ? absoluteUploadUrl(prompt.thumbnailUrl)
+    : "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80";
 
-function coverflowStyle(offset) {
-  const distance = Math.abs(offset);
-  const hidden = distance > 2;
-  const x = offset === 0 ? 0 : Math.sign(offset) * (380 + (distance - 1) * 280);
-  const y = distance * 10;
-  const scale = offset === 0 ? 1.04 : distance === 1 ? 0.88 : 0.74;
-  const rotateY = offset * -12;
+  return (
+    <article className={cn("showcase-card", isVault && "is-vault")}>
+      <div className="showcase-card-media">
+        <Link href={`/prompts/${prompt._id}`} className="showcase-media-link" tabIndex={-1} aria-hidden="true">
+          <img src={promptImage} alt={prompt.title} loading="lazy" />
+          <div className="showcase-media-scrim" />
+        </Link>
 
-  return {
-    zIndex: 80 - distance * 10,
-    opacity: hidden ? 0 : distance === 2 ? 0.28 : distance === 1 ? 0.72 : 1,
-    pointerEvents: hidden ? "none" : "auto",
-    filter: distance === 0 ? "none" : `brightness(${1 - distance * 0.14}) saturate(0.92)`,
-    transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotateY(${rotateY}deg) scale(${scale})`
-  };
+        <div className="showcase-media-top">
+          <span className={cn("showcase-visibility-badge", isVault ? "vault" : "public")}>
+            {isVault ? <Crown size={13} /> : <Sparkles size={13} />}
+            {isVault ? "Premium Vault" : prompt.category || "Workflow"}
+          </span>
+          <span className="showcase-tool-badge">
+            {prompt.aiTool}
+          </span>
+        </div>
+
+        {isVault && (
+          <div className="showcase-lock-pill">
+            <Lock size={12} /> $5 Lifetime
+          </div>
+        )}
+      </div>
+
+      <div className="showcase-card-body">
+        <div className="showcase-badge-row">
+          <span className="showcase-difficulty-chip">{prompt.difficulty || "All Levels"}</span>
+          <span className="showcase-category-chip">{prompt.category || "AI Prompt"}</span>
+        </div>
+
+        <h3 className="showcase-card-title">
+          <Link href={`/prompts/${prompt._id}`}>{prompt.title}</Link>
+        </h3>
+        <p className="showcase-card-desc">{prompt.description}</p>
+
+        <div className="showcase-card-tags">
+          {prompt.tags?.slice(0, 3).map((tag) => (
+            <span key={tag} className="showcase-tag">#{tag}</span>
+          ))}
+        </div>
+
+        <div className="showcase-card-footer">
+          <div className="showcase-card-stats">
+            <span title={`${prompt.copyCount ?? 0} copies`}>
+              <Copy size={13} /> {prompt.copyCount ?? 0}
+            </span>
+            <span title={`Rated ${Number(prompt.avgRating ?? 0).toFixed(1)} stars`}>
+              <Star size={13} className="text-amber-400 fill-amber-400" /> {Number(prompt.avgRating ?? 0).toFixed(1)}
+            </span>
+          </div>
+
+          <Link href={`/prompts/${prompt._id}`} className="showcase-card-btn">
+            View Details <ArrowRight size={14} />
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default function HomePage() {
@@ -82,13 +124,34 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [viewMode, setViewMode] = useState("carousel");
   const [mounted, setMounted] = useState(false);
 
-  const premiumSlides = useMemo(() => {
-    return [...(carouselPrompts.length ? carouselPrompts : featured)]
-      .sort((a, b) => Number(b.visibility === "private") - Number(a.visibility === "private"))
-      .slice(0, 8);
-  }, [carouselPrompts, featured]);
+  const showcaseCategories = [
+    { id: "all", label: "All Workflows" },
+    { id: "marketing", label: "Marketing" },
+    { id: "writing", label: "Writing & Content" },
+    { id: "design", label: "Design & Art" },
+    { id: "coding", label: "Engineering" },
+    { id: "vault", label: "👑 Premium Vault" }
+  ];
+
+  const displayPrompts = useMemo(() => {
+    const pool = uniquePrompts(carouselPrompts.length ? carouselPrompts : featured, featured);
+    if (categoryFilter === "all") return pool;
+    if (categoryFilter === "vault") return pool.filter((p) => p.visibility === "private");
+    return pool.filter((p) => {
+      const cat = (p.category ?? "").toLowerCase();
+      const title = (p.title ?? "").toLowerCase();
+      const tags = (p.tags ?? []).join(" ").toLowerCase();
+      if (categoryFilter === "marketing") return cat.includes("market") || tags.includes("market") || title.includes("market");
+      if (categoryFilter === "writing") return cat.includes("writ") || tags.includes("writ") || title.includes("writ") || tags.includes("copy");
+      if (categoryFilter === "design") return cat.includes("design") || cat.includes("image") || tags.includes("design") || tags.includes("image") || title.includes("product");
+      if (categoryFilter === "coding") return cat.includes("code") || cat.includes("dev") || tags.includes("dev") || tags.includes("spec") || title.includes("app");
+      return cat === categoryFilter;
+    });
+  }, [carouselPrompts, featured, categoryFilter]);
 
   const loggedInCta = mounted && Boolean(session);
 
@@ -102,7 +165,7 @@ export default function HomePage() {
     ])
       .then(([prompts, showcasePrompts, topCreators, publicReviews]) => {
         setFeatured(prompts.data ?? []);
-        setCarouselPrompts(uniquePrompts(showcasePrompts.data ?? [], prompts.data ?? []).slice(0, 8));
+        setCarouselPrompts(uniquePrompts(showcasePrompts.data ?? [], prompts.data ?? []).slice(0, 10));
         setCreators(topCreators ?? []);
         setReviews(publicReviews ?? []);
       })
@@ -112,27 +175,81 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    setActiveSlide(0);
-  }, [premiumSlides.length]);
+  const sliderRef = useRef(null);
 
   useEffect(() => {
-    if (premiumSlides.length < 2) return undefined;
+    setActiveSlide(0);
+    if (sliderRef.current) {
+      sliderRef.current.scrollTo({ left: 0, behavior: "auto" });
+    }
+  }, [displayPrompts.length, categoryFilter]);
+
+  useEffect(() => {
+    if (viewMode !== "carousel" || displayPrompts.length < 2) return undefined;
     const timer = setInterval(() => {
-      setActiveSlide((current) => (current + 1) % premiumSlides.length);
-    }, 4600);
+      if (!sliderRef.current) {
+        setActiveSlide((current) => (current + 1) % displayPrompts.length);
+        return;
+      }
+      const container = sliderRef.current;
+      const cardEl = container.querySelector(".showcase-slide-item");
+      const cardWidth = cardEl ? cardEl.offsetWidth + 24 : 380;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft >= maxScroll - 16) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+        setActiveSlide(0);
+      } else {
+        container.scrollBy({ left: cardWidth, behavior: "smooth" });
+      }
+    }, 5500);
     return () => clearInterval(timer);
-  }, [premiumSlides.length]);
+  }, [displayPrompts.length, viewMode]);
 
   function submit(event) {
     event.preventDefault();
     router.push(`/prompts?search=${encodeURIComponent(search)}`);
   }
 
-  function movePremiumSlide(step) {
-    if (!premiumSlides.length) return;
-    setActiveSlide((current) => (current + step + premiumSlides.length) % premiumSlides.length);
+  function scrollSlider(direction) {
+    if (!sliderRef.current) {
+      setActiveSlide((current) => (current + direction + displayPrompts.length) % displayPrompts.length);
+      return;
+    }
+    const container = sliderRef.current;
+    const cardEl = container.querySelector(".showcase-slide-item");
+    const scrollStep = cardEl ? cardEl.offsetWidth + 24 : 380;
+    container.scrollBy({
+      left: direction * scrollStep,
+      behavior: "smooth"
+    });
   }
+
+  function scrollToSlide(index) {
+    if (!sliderRef.current) {
+      setActiveSlide(index);
+      return;
+    }
+    const container = sliderRef.current;
+    const cardEl = container.querySelector(".showcase-slide-item");
+    const cardWidth = cardEl ? cardEl.offsetWidth + 24 : 380;
+    container.scrollTo({
+      left: index * cardWidth,
+      behavior: "smooth"
+    });
+    setActiveSlide(index);
+  }
+
+  const handleSliderScroll = () => {
+    if (!sliderRef.current) return;
+    const container = sliderRef.current;
+    const cardEl = container.querySelector(".showcase-slide-item");
+    if (!cardEl) return;
+    const cardWidth = cardEl.offsetWidth + 24;
+    const newIndex = Math.round(container.scrollLeft / cardWidth);
+    if (newIndex !== activeSlide && newIndex >= 0 && newIndex < displayPrompts.length) {
+      setActiveSlide(newIndex);
+    }
+  };
 
   return (
     <>
@@ -309,134 +426,141 @@ export default function HomePage() {
         )}
       </section>
 
-      <section className="section premium-swiper-section">
-        <div className="section-heading premium-coverflow-heading">
-          <span className="eyebrow">
-            <Sparkles size={14} /> Curated Prompt Collections
-          </span>
-          <h2>Explore Prompt Collections</h2>
-          <p>Swipe through curated AI workflows built for marketing, research, design, automation, and strategy teams.</p>
+      <section className="section showcase-section" id="curated-collections">
+        <div className="showcase-header">
+          <div className="showcase-header-left">
+            <span className="eyebrow">
+              <Sparkles size={14} /> Curated Prompt Collections
+            </span>
+            <h2>Explore Prompt Collections</h2>
+            <p>
+              Handpicked, battle-tested AI workflows across marketing, engineering, writing, and design — built for ChatGPT, Claude, Midjourney, and Gemini.
+            </p>
+          </div>
+
+          <div className="showcase-header-controls">
+            <div className="showcase-view-switch" role="group" aria-label="Showcase view mode">
+              <button
+                type="button"
+                className={cn("showcase-switch-btn", viewMode === "carousel" && "active")}
+                onClick={() => setViewMode("carousel")}
+                aria-label="Deck Slider View"
+                title="Deck Slider View"
+              >
+                <SlidersHorizontal size={14} />
+                <span>Slider</span>
+              </button>
+              <button
+                type="button"
+                className={cn("showcase-switch-btn", viewMode === "grid" && "active")}
+                onClick={() => setViewMode("grid")}
+                aria-label="3-Column Grid View"
+                title="3-Column Grid View"
+              >
+                <LayoutGrid size={14} />
+                <span>Grid</span>
+              </button>
+            </div>
+
+            {viewMode === "carousel" && displayPrompts.length > 1 && (
+              <div className="showcase-arrow-group">
+                <button
+                  type="button"
+                  className="showcase-arrow-btn"
+                  onClick={() => scrollSlider(-1)}
+                  aria-label="Previous prompt"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="showcase-arrow-btn"
+                  onClick={() => scrollSlider(1)}
+                  aria-label="Next prompt"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
+
+        <div className="showcase-filter-bar" role="tablist" aria-label="Showcase category filter">
+          {showcaseCategories.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              role="tab"
+              aria-selected={categoryFilter === cat.id}
+              className={cn("showcase-filter-pill", categoryFilter === cat.id && "active")}
+              onClick={() => setCategoryFilter(cat.id)}
+            >
+              {cat.label}
+              {cat.id === "vault" && <span className="showcase-pill-badge">PRO</span>}
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <SkeletonGrid />
-        ) : premiumSlides.length ? (
-          <div className="premium-coverflow" aria-label="Premium prompt coverflow carousel">
-            <button className="coverflow-arrow left" type="button" aria-label="Previous collection" onClick={() => movePremiumSlide(-1)}>
-              <ChevronLeft size={24} />
-            </button>
-            <button className="coverflow-arrow right" type="button" aria-label="Next collection" onClick={() => movePremiumSlide(1)}>
-              <ChevronRight size={24} />
-            </button>
+        ) : displayPrompts.length > 0 ? (
+          viewMode === "carousel" ? (
+            <div className="showcase-slider-wrapper">
+              <div
+                className="showcase-slider-track"
+                ref={sliderRef}
+                onScroll={handleSliderScroll}
+              >
+                {displayPrompts.map((prompt) => (
+                  <div key={prompt._id} className="showcase-slide-item">
+                    <ShowcaseCard prompt={prompt} />
+                  </div>
+                ))}
+              </div>
 
-            <div className="premium-coverflow-stage">
-              {premiumSlides.map((prompt, index) => {
-                const activeIndex = activeSlide % premiumSlides.length;
-                const offset = circularOffset(index, activeIndex, premiumSlides.length);
-                const isActive = offset === 0;
-                const isVault = prompt.visibility === "private";
-                const promptImage = prompt.thumbnailUrl || "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80";
-
-                return (
-                  <motion.article
-                    aria-current={isActive}
-                    aria-hidden={Math.abs(offset) > 3}
-                    className={`coverflow-card${isActive ? " active" : ""}${isVault ? " vault" : ""}`}
-                    key={prompt._id}
-                    onClick={() => setActiveSlide(index)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") setActiveSlide(index);
-                    }}
-                    role="button"
-                    tabIndex={Math.abs(offset) > 3 ? -1 : 0}
-                    style={coverflowStyle(offset)}
-                  >
-                    {isVault && (
-                      <div className="coverflow-vault-beam" aria-hidden="true">
-                        <span />
-                        <span />
-                        <span />
-                      </div>
-                    )}
-
-                    <div className="coverflow-card-image">
-                      <img src={promptImage} alt={prompt.title} />
-                      <span className={isVault ? "vault-badge" : "category-badge"}>
-                        {isVault ? <Lock size={13} /> : <Sparkles size={13} />}
-                        {isVault ? "Locked Vault" : prompt.category}
-                      </span>
-                      {isVault && (
-                        <div className="coverflow-vault-lock">
-                          <Crown size={14} />
-                          <small>$5 unlock</small>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="coverflow-card-body">
-                      <div className="coverflow-meta-row">
-                        <span className="coverflow-tool-chip">{prompt.aiTool}</span>
-                        <span className="coverflow-difficulty-chip">{prompt.difficulty}</span>
-                        {isVault ? (
-                          <span className="coverflow-vault-pill"><Crown size={12} /> Premium Vault</span>
-                        ) : (
-                          <span className="coverflow-free-pill">Public Workflow</span>
-                        )}
-                      </div>
-                      <h3>{prompt.title}</h3>
-                      <p className="coverflow-description">{prompt.description}</p>
-                      <div className="coverflow-tags">
-                        {prompt.tags?.slice(0, 3).map((tag) => (
-                          <span key={tag}>#{tag}</span>
-                        ))}
-                      </div>
-                      <div className="coverflow-card-bottom">
-                        <div className="coverflow-metrics">
-                          <span>
-                            <Copy size={13} /> {prompt.copyCount ?? 0} copies
-                          </span>
-                          <span>
-                            <Star size={13} /> {Number(prompt.avgRating ?? 0).toFixed(1)}
-                          </span>
-                        </div>
-                        <Link
-                          href={`/prompts/${prompt._id}`}
-                          className="coverflow-detail-button"
-                          aria-label={`View prompt ${prompt.title}`}
-                          onClick={(event) => event.stopPropagation()}
-                        >
-                          View Details <ArrowRight size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.article>
-                );
-              })}
+              {displayPrompts.length > 1 && (
+                <div className="showcase-dots" aria-label="Showcase pagination">
+                  {displayPrompts.map((prompt, index) => (
+                    <button
+                      key={prompt._id}
+                      type="button"
+                      aria-label={`Slide ${index + 1}: ${prompt.title}`}
+                      className={cn("showcase-dot", index === activeSlide && "active")}
+                      onClick={() => scrollToSlide(index)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-
-            <div className="coverflow-dots" aria-label="Premium carousel pagination">
-              {premiumSlides.map((prompt, index) => (
-                <button
-                  aria-label={`Show ${prompt.title}`}
-                  className={index === activeSlide % premiumSlides.length ? "active" : ""}
-                  key={prompt._id}
-                  type="button"
-                  onClick={() => setActiveSlide(index)}
-                />
+          ) : (
+            <div className="showcase-grid-view">
+              {displayPrompts.map((prompt) => (
+                <ShowcaseCard key={prompt._id} prompt={prompt} />
               ))}
             </div>
-
-            <div className="coverflow-actions">
-              <Link href="/prompts" className="button">
-                Browse All Collections <ArrowRight size={18} />
-              </Link>
-              <Link href="/payment" className="button secondary">
-                Unlock Premium
-              </Link>
-            </div>
-          </div>
+          )
         ) : (
-          <div className="container empty-state">Premium carousel will appear after featured prompts are available.</div>
+          <div className="showcase-empty-state">
+            <Sparkles size={28} className="text-primary mx-auto mb-3 opacity-60" />
+            <p>No prompt workflows match this filter yet.</p>
+            <button
+              type="button"
+              className="button secondary mt-3 text-sm"
+              onClick={() => setCategoryFilter("all")}
+            >
+              Reset to All Workflows
+            </button>
+          </div>
         )}
+
+        <div className="showcase-bottom-actions">
+          <Link href="/prompts" className="button">
+            Browse All 1,800+ Prompts <ArrowRight size={16} />
+          </Link>
+          <Link href="/payment" className="button secondary">
+            <Crown size={16} className="text-amber-400" /> Unlock Premium Vault ($5)
+          </Link>
+        </div>
       </section>
 
       <section className="section alt">
