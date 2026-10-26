@@ -59,47 +59,56 @@ export function Header() {
 
   return (
     <header className="site-header">
-      <Link href="/" className="brand" aria-label="PromptHive home">
-        <span className="brand-mark">
-          <BrandMark />
-        </span>
-        <span>PromptHive</span>
-      </Link>
+      <div className="site-header-container">
+        <Link href="/" className="brand" aria-label="PromptHive home">
+          <span className="brand-mark">
+            <BrandMark />
+          </span>
+          <span>PromptHive</span>
+        </Link>
 
-      <div className="header-controls">
-        <ThemeToggle />
-        <button className="icon-button menu-toggle" onClick={() => setOpen((value) => !value)} aria-label="Open menu">
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
+        <div className="site-header-right">
+          <nav className={open ? "nav-links open" : "nav-links"}>
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
+                {link.label}
+              </Link>
+            ))}
+            {session ? (
+              <>
+                <Link href={dashboardHref} onClick={() => setOpen(false)}>
+                  Dashboard
+                </Link>
+                <button className="text-button" onClick={signOut}>
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setOpen(false)}>
+                  Login
+                </Link>
+                <Link className="button small" href="/register" onClick={() => setOpen(false)}>
+                  Register
+                </Link>
+              </>
+            )}
+          </nav>
 
-      <nav className={open ? "nav-links open" : "nav-links"}>
-        {links.map((link) => (
-          <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
-            {link.label}
-          </Link>
-        ))}
-        {session ? (
-          <>
-            <Link href={dashboardHref} onClick={() => setOpen(false)}>
-              Dashboard
-            </Link>
-            <button className="text-button" onClick={signOut}>
-              <LogOut size={16} />
-              Logout
+          <div className="header-controls">
+            <ThemeToggle />
+            <button
+              className="icon-button menu-toggle"
+              onClick={() => setOpen((value) => !value)}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
             </button>
-          </>
-        ) : (
-          <>
-            <Link href="/login" onClick={() => setOpen(false)}>
-              Login
-            </Link>
-            <Link className="button small" href="/register" onClick={() => setOpen(false)}>
-              Register
-            </Link>
-          </>
-        )}
-      </nav>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }
