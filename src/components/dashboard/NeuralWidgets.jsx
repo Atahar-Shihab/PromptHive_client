@@ -187,17 +187,17 @@ export function GlassTable({ title, columns, rows, emptyTitle = "No data yet", e
                     <td className="border-b border-white/[0.045] px-5 py-4">
                       <div className="flex justify-end gap-2">
                         {row.href && (
-                          <Link href={row.href} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-cyan-300/40 hover:text-white" title="View details">
+                          <Link href={row.href} className="neural-action-btn neural-action-view grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="View details">
                             <Eye size={15} />
                           </Link>
                         )}
                         {row.editHref && (
-                          <Link href={row.editHref} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-violet-300/40 hover:text-white" title="Edit">
+                          <Link href={row.editHref} className="neural-action-btn neural-action-edit grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="Edit">
                             <Pencil size={15} />
                           </Link>
                         )}
                         {row.onDelete && (
-                          <button type="button" onClick={row.onDelete} className="grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition hover:border-red-300/40 hover:text-white" title="Delete">
+                          <button type="button" onClick={row.onDelete} className="neural-action-btn neural-action-delete grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="Delete">
                             <Trash2 size={15} />
                           </button>
                         )}
@@ -218,6 +218,25 @@ export function GlassTable({ title, columns, rows, emptyTitle = "No data yet", e
                     <div className="text-sm text-white/75">{column.render ? column.render(row) : row[column.key]}</div>
                   </div>
                 ))}
+                {(row.href || row.editHref || row.onDelete) && (
+                  <div className="mt-3 flex items-center justify-end gap-2 border-t border-white/[0.06] pt-3">
+                    {row.href && (
+                      <Link href={row.href} className="neural-action-btn neural-action-view grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="View details">
+                        <Eye size={15} />
+                      </Link>
+                    )}
+                    {row.editHref && (
+                      <Link href={row.editHref} className="neural-action-btn neural-action-edit grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="Edit">
+                        <Pencil size={15} />
+                      </Link>
+                    )}
+                    {row.onDelete && (
+                      <button type="button" onClick={row.onDelete} className="neural-action-btn neural-action-delete grid h-8 w-8 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/45 transition" title="Delete">
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
