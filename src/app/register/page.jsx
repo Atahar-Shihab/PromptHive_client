@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { Crown, ImagePlus, PenTool, Rocket, ShieldCheck, Sparkles, Star, UserRound } from "lucide-react";
+import { Crown, ImagePlus, Loader2, PenTool, Rocket, ShieldCheck, Sparkles, Star, UserRound } from "lucide-react";
 import { authClient, clearStoredAuthTokens, clientCallbackURL } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 import { roleHomePath } from "@/lib/role-home";
+import { cn } from "@/lib/format";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,6 +18,15 @@ export default function RegisterPage() {
   const [photoPreview, setPhotoPreview] = useState("");
   const [accountRole, setAccountRole] = useState("user");
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (!googleLoading) return;
+    const timer = setTimeout(() => {
+      setGoogleLoading(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [googleLoading]);
 
   useEffect(() => {
     if (!isPending && session) router.replace(roleHomePath(session.user?.role));
@@ -102,14 +112,25 @@ export default function RegisterPage() {
   }
 
   async function googleLogin() {
+    if (googleLoading || submitting) return;
+    setGoogleLoading(true);
     try {
       clearStoredAuthTokens();
-      await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: "google",
         callbackURL: clientCallbackURL("/dashboard")
       });
+      if (result?.error) {
+        setGoogleLoading(false);
+        toast.error(result.error.message || "Google sign-in could not be started.");
+        return;
+      }
+      if (result?.data?.url) {
+        window.location.href = result.data.url;
+      }
     } catch (error) {
-      toast.error(error?.message ?? "Google login failed");
+      setGoogleLoading(false);
+      toast.error(error?.message ?? "Could not connect to Google. Please try again.");
     }
   }
 
@@ -202,13 +223,29 @@ export default function RegisterPage() {
           Password
           <input type="password" name="password" required minLength={8} placeholder="Minimum 8 characters" />
         </label>
-        <button className="button" type="submit" disabled={submitting}>
+        <button className="button" type="submit" disabled={submitting || googleLoading}>
           {submitting ? "Creating account..." : "Register"}
         </button>
         <div className="auth-divider"><span>or</span></div>
-        <button className="button secondary google-auth-button" type="button" onClick={googleLogin}>
-          <span className="google-mark" aria-hidden="true">G</span>
-          Continue with Google
+        <button
+          className={cn("button secondary google-auth-button", googleLoading && "is-loading")}
+          type="button"
+          onClick={googleLogin}
+          disabled={submitting || googleLoading}
+          aria-busy={googleLoading}
+        >
+          {googleLoading ? (
+            <>
+              <Loader2 size={18} className="animate-spin text-cyan-400 shrink-0" />
+              <span>Connecting to Google...</span>
+            </>
+          ) : (
+            <>
+              <span className="google-mark" aria-hidden="true">G</span>
+              <span>Continue with Google</span>
+            </>
+          )}
+          {googleLoading && <span className="google-auth-progress-bar" aria-hidden="true" />}
         </button>
         <div className="auth-trust-note">
           <ShieldCheck size={16} /> Google sign-up can use your Google profile photo automatically.

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { ArrowRight, Bookmark, Check, Copy, Crown, LayoutDashboard, ShieldCheck, Sparkles, User, Zap } from "lucide-react";
+import { ArrowRight, Bookmark, Check, Copy, Crown, LayoutDashboard, Loader2, ShieldCheck, Sparkles, User, Zap } from "lucide-react";
 import { authClient, clearStoredAuthTokens, clientCallbackURL } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 import { roleHomePath } from "@/lib/role-home";
+import { cn } from "@/lib/format";
 
 function safeLocalRedirect(path) {
   if (typeof window === "undefined") return "/dashboard";
@@ -73,11 +74,20 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [activeDemoRole, setActiveDemoRole] = useState(null);
   const [copiedRole, setCopiedRole] = useState(null);
 
+  useEffect(() => {
+    if (!googleLoading) return;
+    const timer = setTimeout(() => {
+      setGoogleLoading(false);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [googleLoading]);
+
   async function executeLogin(targetEmail, targetPassword, roleName = "") {
-    if (submitting) return;
+    if (submitting || googleLoading) return;
     setSubmitting(true);
     if (roleName) setActiveDemoRole(roleName);
     setEmail(targetEmail);
@@ -137,14 +147,25 @@ export default function LoginPage() {
   }
 
   async function googleLogin() {
+    if (googleLoading || submitting) return;
+    setGoogleLoading(true);
     try {
       clearStoredAuthTokens();
-      await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: "google",
         callbackURL: clientCallbackURL(redirect)
       });
+      if (result?.error) {
+        setGoogleLoading(false);
+        toast.error(result.error.message || "Google sign-in could not be started.");
+        return;
+      }
+      if (result?.data?.url) {
+        window.location.href = result.data.url;
+      }
     } catch (error) {
-      toast.error(error?.message ?? "Google login failed");
+      setGoogleLoading(false);
+      toast.error(error?.message ?? "Could not connect to Google. Please try again.");
     }
   }
 
@@ -200,7 +221,7 @@ export default function LoginPage() {
                   key={account.role}
                   type="button"
                   className="demo-role-card"
-                  disabled={submitting}
+                  disabled={submitting || googleLoading}
                   onClick={() => executeLogin(account.email, account.password, account.role)}
                 >
                   <div className="demo-role-top">
@@ -259,13 +280,29 @@ export default function LoginPage() {
             placeholder="Minimum 8 characters"
           />
         </label>
-        <button className="button" type="submit" disabled={submitting}>
+        <button className="button" type="submit" disabled={submitting || googleLoading}>
           {submitting ? "Signing in..." : "Login"}
         </button>
         <div className="auth-divider"><span>or</span></div>
-        <button className="button secondary google-auth-button" type="button" onClick={googleLogin}>
-          <span className="google-mark" aria-hidden="true">G</span>
-          Continue with Google
+        <button
+          className={cn("button secondary google-auth-button", googleLoading && "is-loading")}
+          type="button"
+          onClick={googleLogin}
+          disabled={submitting || googleLoading}
+          aria-busy={googleLoading}
+        >
+          {googleLoading ? (
+            <>
+              <Loader2 size={18} className="animate-spin text-cyan-400 shrink-0" />
+              <span>Connecting to Google...</span>
+            </>
+          ) : (
+            <>
+              <span className="google-mark" aria-hidden="true">G</span>
+              <span>Continue with Google</span>
+            </>
+          )}
+          {googleLoading && <span className="google-auth-progress-bar" aria-hidden="true" />}
         </button>
         <div className="auth-trust-note">
           <ShieldCheck size={16} /> Your workspace keeps prompts, bookmarks, and premium access synced securely.
