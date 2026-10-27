@@ -181,7 +181,7 @@ function SidebarNav({ groups, pathname, collapsed, mode, onNavigate }) {
 function MobileTabs({ groups, pathname, mode }) {
   const primaryItems = groups.flatMap((group) => group.items).slice(0, 5);
   return (
-    <div className="fixed inset-x-3 bottom-3 z-50 rounded-[1.35rem] border border-white/[0.08] bg-[#15131F]/85 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl md:hidden">
+    <div className="dashboard-mobile-tabs fixed inset-x-3 bottom-3 z-50 rounded-[1.35rem] border border-white/[0.08] bg-[#15131F]/85 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl md:hidden">
       <div className="grid grid-cols-5 gap-1">
         {primaryItems.map((item) => {
           const Icon = item.icon;
@@ -370,10 +370,10 @@ export function DashboardShell({ user, mode, children }) {
               </div>
               <h1 className="mt-1 truncate text-xl font-bold tracking-[-0.02em] text-white/90">{breadcrumb}</h1>
             </div>
-            <Link href="/" className="dashboard-toplink hidden min-h-10 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm font-bold text-white/70 transition hover:text-white sm:inline-flex">
+            <Link href="/" className="dashboard-toplink hidden min-h-10 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm font-bold text-white/70 transition sm:inline-flex">
               <Home size={16} /> Home
             </Link>
-            <Link href="/prompts" className="dashboard-toplink hidden min-h-10 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm font-bold text-white/70 transition hover:text-white lg:inline-flex">
+            <Link href="/prompts" className="dashboard-toplink hidden min-h-10 items-center gap-2 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-3 text-sm font-bold text-white/70 transition lg:inline-flex">
               <Sparkles size={16} /> Marketplace
             </Link>
             <NotificationBell />
@@ -382,7 +382,7 @@ export function DashboardShell({ user, mode, children }) {
               <Avatar user={user} className="h-8 w-8" />
               <span className="dashboard-user-name max-w-36 truncate text-sm font-semibold text-white/80">{user.name}</span>
             </div>
-            <button className="grid h-11 w-11 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/60 transition hover:text-white" onClick={signOut} title="Logout">
+            <button className="grid h-11 w-11 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.04] text-white/60 transition" onClick={signOut} title="Logout">
               <LogOut size={18} />
             </button>
           </div>

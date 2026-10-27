@@ -551,7 +551,7 @@ export default function PromptDetailsPage() {
 
         <div className="qa-sidebar-card">
           <div className="qa-sidebar-head">
-            <span className="flex items-center gap-2 font-bold text-white/90">
+            <span className="qa-sidebar-title flex items-center gap-2 font-bold">
               <Sparkles size={16} className="text-amber-400" /> Quality Scan
             </span>
             {testReport && (
