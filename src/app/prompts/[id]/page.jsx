@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 import { absoluteUploadUrl, apiFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { cn, formatDate } from "@/lib/format";
+import { PromptRemixModal } from "@/components/PromptRemixModal";
+import { PromptVariablePlayground } from "@/components/PromptVariablePlayground";
 import { ReportModal } from "@/components/ReportModal";
 import { Spinner } from "@/components/Spinner";
 
@@ -180,6 +182,7 @@ export default function PromptDetailsPage() {
   const [error, setError] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
   const [copied, setCopied] = useState(false);
+  const [remixing, setRemixing] = useState(false);
 
   useEffect(() => {
     if (isPending) return;
@@ -387,6 +390,18 @@ export default function PromptDetailsPage() {
               <span className={`stamp-badge stamp-badge--${prompt.visibility === "private" ? "premium" : "approved"}`}>{prompt.visibility}</span>
             </div>
             <h1>{prompt.title}</h1>
+            {prompt.forkedFrom && (
+              <div className="remix-lineage-banner">
+                <GitFork size={13} className="text-cyan-400" />
+                <span>
+                  Remixed from{" "}
+                  <Link href={`/prompts/${prompt.forkedFrom._id || prompt.forkedFrom}`}>
+                    {prompt.forkedFrom.title || "Original Prompt"}
+                  </Link>
+                  {prompt.forkedFrom.creator?.name && ` by ${prompt.forkedFrom.creator.name}`}
+                </span>
+              </div>
+            )}
           </div>
           <div className="detail-score">
             <RatingStars value={prompt.avgRating} size={18} />
@@ -405,6 +420,15 @@ export default function PromptDetailsPage() {
             <span key={tag}>#{tag}</span>
           ))}
         </div>
+
+        {!locked && (
+          <PromptVariablePlayground
+            content={prompt.content}
+            title={prompt.title}
+            locked={locked}
+            onRemix={() => setRemixing(true)}
+          />
+        )}
 
         <div className={locked ? "prompt-content locked-content prompt-reader" : "prompt-content prompt-reader"}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{prompt.content}</ReactMarkdown>
