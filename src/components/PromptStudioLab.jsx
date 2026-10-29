@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
@@ -272,6 +272,27 @@ function getToolMeta(toolName = "") {
   return { label: toolName || "AI Model", color: "#6366f1", bg: "rgba(99, 102, 241, 0.12)", border: "rgba(99, 102, 241, 0.28)" };
 }
 
+// Extract variable slots from prompt template
+function extractPromptVariables(content, explicitVariables) {
+  if (Array.isArray(explicitVariables) && explicitVariables.length > 0) {
+    return explicitVariables;
+  }
+  if (!content || typeof content !== "string") return [];
+  const matches = content.match(/\{\{([a-zA-Z0-9_\-\s]+)\}\}/g) || [];
+  const map = new Map();
+  matches.forEach((m) => {
+    const cleanKey = m.replace(/[\{\}]/g, "").trim();
+    if (cleanKey && !map.has(cleanKey)) {
+      map.set(cleanKey, {
+        key: cleanKey,
+        label: cleanKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        defaultVal: ""
+      });
+    }
+  });
+  return Array.from(map.values());
+}
+
 export function PromptStudioLab({ prompts = [] }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activePromptId, setActivePromptId] = useState(null);
@@ -279,7 +300,6 @@ export function PromptStudioLab({ prompts = [] }) {
   const [copied, setCopied] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulatedCount, setSimulatedCount] = useState(0);
-
   // Combine MongoDB prompts with built-in seeds, ensuring zero duplicates
   const allPrompts = useMemo(() => {
     const map = new Map();
@@ -332,11 +352,61 @@ export function PromptStudioLab({ prompts = [] }) {
     return found || filteredPrompts[0];
   }, [filteredPrompts, activePromptId, allPrompts]);
 
+  const [variableValues, setVariableValues] = useState({});
+
+  // Dynamic variable extraction
+  const detectedVariables = useMemo(() => {
+    if (!activePrompt) return [];
+    return extractPromptVariables(activePrompt.content || activePrompt.description, activePrompt.variables);
+  }, [activePrompt]);
+
+  // Reset/initialize variable defaults on prompt switch
+  useEffect(() => {
+    if (!activePrompt) return;
+    const defaults = {};
+    if (Array.isArray(activePrompt.variables)) {
+      activePrompt.variables.forEach((v) => {
+        if (v.key && v.defaultVal) defaults[v.key] = v.defaultVal;
+      });
+    }
+    setVariableValues(defaults);
+  }, [activePrompt?._id]);
+
+  // Live interpolated content with user variables
+  const interpolatedContent = useMemo(() => {
+    const raw = activePrompt?.content || activePrompt?.description || "";
+    if (!raw || detectedVariables.length === 0) return raw;
+    let output = raw;
+    detectedVariables.forEach((v) => {
+      const val = variableValues[v.key] !== undefined && variableValues[v.key] !== ""
+        ? variableValues[v.key]
+        : (v.defaultVal || "");
+      if (val) {
+        output = output.split(`{{${v.key}}}`).join(val);
+      }
+    });
+    return output;
+  }, [activePrompt, detectedVariables, variableValues]);
+
+  const hasVariables = detectedVariables.length > 0;
+  const hasCustomEdits = Object.values(variableValues).some((v) => v && v.trim().length > 0);
+
+  function handleResetVariables() {
+    const defaults = {};
+    if (Array.isArray(activePrompt?.variables)) {
+      activePrompt.variables.forEach((v) => {
+        if (v.key && v.defaultVal) defaults[v.key] = v.defaultVal;
+      });
+    }
+    setVariableValues(defaults);
+    toast.info("Variables reset to defaults.");
+  }
+
   // Copy prompt
   async function copyPrompt() {
     if (!activePrompt) return;
     try {
-      await navigator.clipboard.writeText(activePrompt.content || activePrompt.description || "");
+      await navigator.clipboard.writeText(interpolatedContent || activePrompt.content || activePrompt.description || "");
       setCopied(true);
       toast.success("Master prompt copied to clipboard!");
       setTimeout(() => setCopied(false), 2200);
@@ -627,24 +697,81 @@ export function PromptStudioLab({ prompts = [] }) {
                     </div>
 
                     <pre className="studio-prompt-code">
-                      <code>{activePrompt.content || activePrompt.description}</code>
+                      <code>{interpolatedContent}</code>
                     </pre>
 
-                    {/* Detected Variable Slots */}
-                    <div className="studio-variable-tray">
-                      <span className="studio-tray-title">Customizable Variable Slots:</span>
-                      <div className="studio-tray-pills">
-                        {(activePrompt.variables || [
-                          { key: "target_audience", label: "Target Audience", defaultVal: "B2B Founders" },
-                          { key: "primary_objective", label: "Objective", defaultVal: "Drive Conversions" },
-                          { key: "constraints", label: "Constraints", defaultVal: "Zero Fluff" }
-                        ]).map((v) => (
-                          <span key={v.key} className="studio-variable-pill" title={`Default: ${v.defaultVal}`}>
-                            {"{{" + v.key + "}}"}
-                          </span>
-                        ))}
+                    {/* Interactive Variable Tuner OR Blueprint DNA */}
+                    {hasVariables ? (
+                      <div className="studio-variable-tray interactive">
+                        <div className="studio-tray-header">
+                          <div className="studio-tray-title-group">
+                            <Sliders size={13} className="text-cyan-400" />
+                            <span className="studio-tray-title">Live Variable Tuner</span>
+                            <span className="studio-tray-subtitle">Test custom inputs in real-time</span>
+                          </div>
+                          {hasCustomEdits && (
+                            <button
+                              type="button"
+                              onClick={handleResetVariables}
+                              className="studio-tray-reset-btn"
+                              title="Reset variables to template defaults"
+                            >
+                              <RotateCcw size={11} /> Reset
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="studio-tray-inputs-grid">
+                          {detectedVariables.map((v) => {
+                            const currentVal = variableValues[v.key] !== undefined ? variableValues[v.key] : (v.defaultVal || "");
+                            return (
+                              <div key={v.key} className="studio-variable-field">
+                                <label className="studio-variable-label">
+                                  {"{{" + v.key + "}}"}
+                                </label>
+                                <input
+                                  type="text"
+                                  value={currentVal}
+                                  placeholder={v.label || v.key}
+                                  onChange={(e) => {
+                                    setVariableValues((prev) => ({
+                                      ...prev,
+                                      [v.key]: e.target.value
+                                    }));
+                                  }}
+                                  className="studio-variable-input"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="studio-variable-tray architecture">
+                        <div className="studio-tray-header">
+                          <div className="studio-tray-title-group">
+                            <ShieldCheck size={14} className="text-emerald-400" />
+                            <span className="studio-tray-title">Production Architecture Guardrails</span>
+                          </div>
+                          <span className="studio-dna-pill-count">Verified Blueprint</span>
+                        </div>
+
+                        <div className="studio-dna-badges">
+                          <span className="studio-dna-badge">
+                            <CheckCircle2 size={12} className="text-emerald-400" /> Strict Negative Constraints
+                          </span>
+                          <span className="studio-dna-badge">
+                            <CheckCircle2 size={12} className="text-emerald-400" /> Formatted Schema Validation
+                          </span>
+                          <span className="studio-dna-badge">
+                            <CheckCircle2 size={12} className="text-emerald-400" /> Persona Boundary Framing
+                          </span>
+                          <span className="studio-dna-badge">
+                            <CheckCircle2 size={12} className="text-emerald-400" /> Zero Hallucination Directives
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 ) : terminalTab === "output" ? (
                   <motion.div
@@ -723,23 +850,39 @@ export function PromptStudioLab({ prompts = [] }) {
               </AnimatePresence>
             </div>
 
-            {/* Terminal Footer Navigation */}
+            {/* Terminal Footer Navigation (Clean, Professional & No Fictional Names) */}
             <div className="studio-terminal-footer">
               <div className="studio-footer-info">
-                <span className="studio-creator-pill">
-                  Engineered by <strong>{activePrompt.creator?.name || "Verified Creator"}</strong>
+                <span className="studio-verified-pill">
+                  <ShieldCheck size={14} className="text-emerald-400" />
+                  <span>Production Verified</span>
                 </span>
                 <span className="studio-stat-dot">•</span>
-                <span>{activePrompt.copyCount ?? 0} deployments</span>
+                <span className="studio-telemetry-item">
+                  <Flame size={13} className="text-amber-400" />
+                  <span>{activePrompt.copyCount ?? 0} deployments</span>
+                </span>
+                <span className="studio-stat-dot">•</span>
+                <span className="studio-telemetry-item">
+                  <Star size={13} className="text-amber-400 fill-amber-400" />
+                  <span>{Number(activePrompt.avgRating ?? 5).toFixed(1)} rating</span>
+                </span>
+                <span className="studio-stat-dot hidden sm:inline">•</span>
+                <span className="studio-telemetry-item hidden sm:inline-flex">
+                  <Bot size={13} className="text-cyan-400" />
+                  <span>{toolMeta.label}</span>
+                </span>
               </div>
 
               <div className="studio-footer-actions">
-                <Link href={`/prompts/${activePrompt._id}`} className="button small">
-                  View Full Architecture <ArrowRight size={14} />
+                <Link href={`/prompts/${activePrompt._id}`} className="studio-action-button">
+                  <span>View Full Architecture</span>
+                  <ArrowRight size={14} />
                 </Link>
                 {isVault && (
-                  <Link href="/payment" className="button small secondary">
-                    <Crown size={14} className="text-amber-400" /> Unlock Vault ($5)
+                  <Link href="/payment" className="studio-vault-button">
+                    <Crown size={14} className="text-amber-400" />
+                    <span>Unlock Vault ($5)</span>
                   </Link>
                 )}
               </div>
